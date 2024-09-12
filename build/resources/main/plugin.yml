@@ -1,0 +1,14 @@
+name: SkyWar
+version: '1.0.0'
+main: br.dev.santos.skywar.Skywar
+api-version: '1.8'
+description: "Plugin de SkyWar. Copywrite NovaGames 2024."
+
+commands:
+  salvararea:
+    description: Salva areas para utilizar futuramente
+  resetarea:
+    description: Reseta areas salvas
+  skywar:
+    description: Entrar em uma arena de SkyWars.
+    usage: /skywar
