@@ -41,6 +41,7 @@ public class GameManager implements Listener {
         private String status;
         private String arena;
         private boolean usedExtraLife = false;
+        private int NumberIsland;
 
         public PlayerData() {
             this.life = 100;
@@ -63,6 +64,14 @@ public class GameManager implements Listener {
 
         public void setKit(String kit) {
             this.kit = kit;
+        }
+
+        public void setIsland(int island) {
+            this.NumberIsland = island;
+        }
+
+        public int getIsland() {
+            return NumberIsland;
         }
 
         public String getArena() {
@@ -218,14 +227,14 @@ public class GameManager implements Listener {
             ItemStack chest = new ItemStack(Material.CHEST);
             ItemMeta chestMeta = chest.getItemMeta();
             if (chestMeta != null) {
-                chestMeta.setDisplayName("Seleção de KIT");
+                chestMeta.setDisplayName("§6Seleção de KIT");
                 chest.setItemMeta(chestMeta);
             }
 
             ItemStack emerald = new ItemStack(Material.EMERALD);
             ItemMeta emeraldMeta = emerald.getItemMeta();
             if (emeraldMeta != null) {
-                emeraldMeta.setDisplayName("Loja");
+                emeraldMeta.setDisplayName("§aLoja");
                 emerald.setItemMeta(emeraldMeta);
             }
 
@@ -393,10 +402,20 @@ public class GameManager implements Listener {
             p.setExp(0);
             partida.setStatus("Playing");
 
+            playerDataP.setIsland(warpNumber);
+
             String warpName = arena + "-" + warpNumber;
 
             teleportPlayerToWarp(p, warpName);
         }
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                String delayedMessage = config.getString("messages.pvpenabled");
+                sendMessageToArena(arena, delayedMessage);
+            }
+        }.runTaskLater(plugin, 100L); // 100 ticks = 5 seconds
 
         new BukkitRunnable() {
             @Override
@@ -488,7 +507,7 @@ public class GameManager implements Listener {
                 // Verifica se o jogador já usou a vida extra
                 if (!playerData.hasUsedExtraLife()) {
                     event.getDrops().clear(); // Limpa os drops de itens
-                    teleportPlayerToWarp(player, playerData.getArena() + "-1"); // Teleporta para a warp configurada
+                    teleportPlayerToWarp(player, playerData.getArena() + "-" + playerData.getIsland()); // Teleporta para a warp configurada
 
                     String extraLifeMessage = config.getString("messages.extralifekit_message")
                             .replace("{player}", player.getDisplayName());
@@ -633,6 +652,7 @@ public class GameManager implements Listener {
                         player.setArena(null);
                         player.setKit(null);
                         player.setStatus(null);
+                        player.setIsland(0);
                         p.getInventory().clear();
                         p.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(p, "skywar");
@@ -643,6 +663,7 @@ public class GameManager implements Listener {
                         player.setArena(null);
                         player.setKit(null);
                         player.setStatus(null);
+                        player.setIsland(0);
                         spec.getInventory().clear();
                         spec.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(spec, "skywar");

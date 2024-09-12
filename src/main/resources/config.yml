@@ -32,6 +32,7 @@ messages:
   first_blood_message: "§3[FirstBlood] §6{killer} eliminou {player}! ({X}/{Y})"
   extralifekit_message: "§3[SkyWar] §6{player} morreu porém estava utilizando o kit Vida Extra!"
   extralife_message_to_player: "§cVocê usou sua vida extra!"
+  pvpenabled: "§3[SkyWar] §6O PvP está liberado!"
 
   help:
     - "§6----- §3[SkyWar] &6-----"
