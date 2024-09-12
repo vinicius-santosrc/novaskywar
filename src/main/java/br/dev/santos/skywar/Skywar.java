@@ -13,6 +13,8 @@ import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
+import java.io.File;
+
 public final class Skywar extends JavaPlugin {
 
     @Override
@@ -23,6 +25,8 @@ public final class Skywar extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GameManager(), this);
         this.getCommand("salvararea").setExecutor(new SaveAreaCommand(this));
         this.getCommand("resetarea").setExecutor(new ResetAreaCommand(this));
+        File backupFolder = new File(getDataFolder(), "backups");
+        getCommand("resetworld").setExecutor(new ResetWorldCommand("nome_do_mundo", backupFolder));
         Kit.initializeKits();
     }
 

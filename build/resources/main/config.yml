@@ -20,7 +20,7 @@ messages:
   pvp_message: "§3[SkyWar] §6O PvP será liberado em {seconds} segundos!"
   winning_message: "§3[SkyWar] §6Parabéns! Você venceu o jogo!"
   game_finished: "§3[SkyWar] §6O jogo acabou! O vencedor foi: {player}"
-  lobby_message: "§6Vocês serão teleportados para o lobby em 15 segundos!"
+  lobby_message: "§3[SkyWar] §6Vocês serão teleportados para o lobby em 15 segundos!"
   winner_message:
     - "§6Você ganhou §f{creditos} §6nessa partida:"
     - "   §f+20 §6por participação"
