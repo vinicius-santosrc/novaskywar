@@ -8,6 +8,7 @@ import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -15,8 +16,8 @@ import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
 
-public final class Skywar extends JavaPlugin {
-
+public final class Skywar extends JavaPlugin implements Listener {
+    private static File backupFolder;
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -25,8 +26,9 @@ public final class Skywar extends JavaPlugin {
         getServer().getPluginManager().registerEvents(new GameManager(), this);
         this.getCommand("salvararea").setExecutor(new SaveAreaCommand(this));
         this.getCommand("resetarea").setExecutor(new ResetAreaCommand(this));
-        File backupFolder = new File(getDataFolder(), "backups");
-        getCommand("resetworld").setExecutor(new ResetWorldCommand("nome_do_mundo", backupFolder));
+        backupFolder = new File(getDataFolder(), "backups");
+        getServer().getPluginManager().registerEvents(this, this);
+        getCommand("resetworld").setExecutor(new ResetWorldCommand("SkyLands", backupFolder));
         Kit.initializeKits();
     }
 
@@ -34,6 +36,10 @@ public final class Skywar extends JavaPlugin {
     public void onDisable() {
         System.out.println("Skywar Plugin Disabled");
         Bukkit.getLogger().info("§cPlugin SkyWar desabilitado");
+    }
+
+    public static void resetWorldByArena(String arena) {
+        new ResetWorldCommand(arena, backupFolder);
     }
 
     @EventHandler

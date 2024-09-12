@@ -21,8 +21,10 @@ import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
+import org.bukkit.plugin.java.JavaPlugin;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -97,6 +99,7 @@ public class GameManager implements Listener {
 
 
     }
+
 
     public static class Partida {
         private String status; // Started, Finishing, Reseting, Vip, Open
@@ -640,7 +643,7 @@ public class GameManager implements Listener {
 
         }, 0L, 20L).getTaskId();
 
-
+        Skywar.resetWorldByArena(arena);
 
     }
 
