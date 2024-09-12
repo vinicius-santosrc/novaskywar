@@ -22,11 +22,6 @@ public class ResetWorldCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(ChatColor.RED + "Apenas jogadores podem executar este comando.");
-            return false;
-        }
-
         Player player = (Player) sender;
         World world = Bukkit.getWorld(worldName);
 

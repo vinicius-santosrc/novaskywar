@@ -376,6 +376,7 @@ public class GameManager implements Listener {
 
         for (int i = 0; i < getPlayersInArena(arena).size(); i++) {
             Player p = getPlayersInArena(arena).get(i);
+            p.setGameMode(GameMode.SURVIVAL);
             ScoreBoard.setScoreBoard(p, playersAlive, spectators, arena, 0);
         }
 
@@ -458,6 +459,7 @@ public class GameManager implements Listener {
         Player player = event.getEntity();
         PlayerData playerData = playersData.get(player);
         event.setDeathMessage(null);
+        player.spigot().respawn();
 
         EntityDamageEvent lastDamageCause = player.getLastDamageCause();
 
@@ -477,23 +479,50 @@ public class GameManager implements Listener {
             deathMessage = config.getString("messages.messageDeath")
                     .replace("{player}", player.getDisplayName());
         }
+
         // Se o jogador tiver o kit "Vida-Extra"
-        if (playerData.getKit().equalsIgnoreCase("Vida-Extra") && !playerData.isDead()) {
-            // Verifica se o jogador já usou a vida extra
-            if (!playerData.hasUsedExtraLife()) {
-                event.getDrops().clear(); // Limpa os drops de itens
-                player.spigot().respawn(); // Força o respawn do jogador
-                teleportPlayerToWarp(player, playerData.getArena() + "-1"); // Teleporta para a warp configurada
+        if (playerData != null) {
+            Bukkit.getLogger().info("Kit: " + playerData.getKit());
+            Bukkit.getLogger().info("Is Dead: " + playerData.isDead());
+            if (playerData.getKit() != null && playerData.getKit().equalsIgnoreCase("Vida-Extra") && !playerData.isDead()) {
+                // Verifica se o jogador já usou a vida extra
+                if (!playerData.hasUsedExtraLife()) {
+                    event.getDrops().clear(); // Limpa os drops de itens
+                    teleportPlayerToWarp(player, playerData.getArena() + "-1"); // Teleporta para a warp configurada
 
-                String extraLifeMessage = config.getString("messages.extralifekit_message")
-                        .replace("{player}", player.getDisplayName());
-                sendMessageToArena(playerData.getArena(), extraLifeMessage);
+                    String extraLifeMessage = config.getString("messages.extralifekit_message")
+                            .replace("{player}", player.getDisplayName());
+                    sendMessageToArena(playerData.getArena(), extraLifeMessage);
 
-                String extraLifeMessageToPlayer = config.getString("messages.extralife_message_to_player");
+                    String extraLifeMessageToPlayer = config.getString("messages.extralife_message_to_player");
 
-                player.sendMessage(extraLifeMessageToPlayer);
+                    player.sendMessage(extraLifeMessageToPlayer);
 
-                playerData.setUsedExtraLife(true);
+                    playerData.setUsedExtraLife(true);
+                } else {
+                    playerData.setDead(true);
+                    playerData.setKit(null);
+                    playerData.setUsedExtraLife(false);
+                    playerData.setStatus("Espectador");
+
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            teleportPlayerToWarp(player, playerData.getArena() + "-winner");
+                            player.setGameMode(GameMode.SPECTATOR);
+                        }
+                    }.runTaskLater(Skywar.getPlugin(Skywar.class), 1L);
+
+                    if (playerData != null) {
+                        List<Player> playersInArena = getPlayersInArena(playerData.arena);
+                        playersInArena.remove(player);
+
+                        String messageDeath = deathMessage
+                                .replace("{X}", String.valueOf(playersInArena.size()))
+                                .replace("{Y}", "12");
+                        sendMessageToArena(playerData.arena, messageDeath);
+                    }
+                }
             } else {
                 playerData.setDead(true);
                 playerData.setKit(null);
@@ -595,8 +624,8 @@ public class GameManager implements Listener {
                 } else {
                     Bukkit.getScheduler().cancelTask(taskId[0]);
 
-                    List<Player> playersInArena = new ArrayList<>(getPlayersInArena(arena)); // Cria uma cópia da lista
-                    List<Player> specsInArena = new ArrayList<>(getSpectators(arena)); // Cria uma cópia da lista
+                    List<Player> playersInArena = new ArrayList<>(getPlayersInArena(arena));
+                    List<Player> specsInArena = new ArrayList<>(getSpectators(arena));
 
                     for (Player p : playersInArena) {
                         PlayerData player  = getPlayer(p);
@@ -604,6 +633,7 @@ public class GameManager implements Listener {
                         player.setArena(null);
                         player.setKit(null);
                         player.setStatus(null);
+                        p.getInventory().clear();
                         p.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(p, "skywar");
                     }
@@ -613,6 +643,7 @@ public class GameManager implements Listener {
                         player.setArena(null);
                         player.setKit(null);
                         player.setStatus(null);
+                        spec.getInventory().clear();
                         spec.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(spec, "skywar");
                     }
