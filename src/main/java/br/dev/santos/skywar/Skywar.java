@@ -23,9 +23,10 @@ public final class Skywar extends JavaPlugin implements Listener {
         saveDefaultConfig();
         System.out.println("Skywar Plugin Enabled");
         getLogger().info("SkyWar Plugin habilitado!");
-        getServer().getPluginManager().registerEvents(new GameManager(), this);
+        getServer().getPluginManager().registerEvents(new GameManager(this), this);
         this.getCommand("salvararea").setExecutor(new SaveAreaCommand(this));
         this.getCommand("resetarea").setExecutor(new ResetAreaCommand(this));
+        getServer().getPluginManager().registerEvents(new SignClickListener(), this);
         backupFolder = new File(getDataFolder(), "backups");
         getServer().getPluginManager().registerEvents(this, this);
         getCommand("resetworld").setExecutor(new ResetWorldCommand("SkyLands", backupFolder));
@@ -41,42 +42,6 @@ public final class Skywar extends JavaPlugin implements Listener {
     public static void resetWorldByArena(String arena) {
         new ResetWorldCommand(arena, backupFolder);
     }
-
-    @EventHandler
-    public void onInventoryClick(InventoryClickEvent event) {
-        if (!(event.getWhoClicked() instanceof Player)) {
-            return;
-        }
-
-        Player player = (Player) event.getWhoClicked();
-        ItemStack clickedItem = event.getCurrentItem();
-
-        // Verifique se o item clicado é nulo ou ar
-        if (clickedItem == null || clickedItem.getType() == Material.AIR) {
-            return;
-        }
-
-        // Impedir que o jogador interaja com o inventário se for o baú ou a esmeralda
-        if (clickedItem.getType() == Material.CHEST || clickedItem.getType() == Material.EMERALD) {
-            event.setCancelled(true); // Cancela o evento para prevenir a remoção do item
-
-            // Verificar se o clique foi com o botão direito do mouse ou esquerdo
-            if (event.getClick().isRightClick() || event.getClick().isLeftClick()) {
-                if (clickedItem.getType() == Material.CHEST) {
-                    // Executa o comando para selecionar kit
-                    Bukkit.dispatchCommand(player, "swkits"); // Use Bukkit.dispatchCommand para garantir que o comando seja executado
-                    player.sendMessage("Abrindo seleção de kits...");
-                    Bukkit.getLogger().info(player.getName() + " clicou no baú para selecionar um kit.");
-                } else if (clickedItem.getType() == Material.EMERALD) {
-                    // Executa o comando para abrir a loja
-                    Bukkit.dispatchCommand(player, "swloja");
-                    player.sendMessage("Abrindo loja...");
-                    Bukkit.getLogger().info(player.getName() + " clicou na esmeralda para abrir a loja.");
-                }
-            }
-        }
-    }
-
 
 
     @Override

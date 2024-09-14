@@ -71,10 +71,11 @@ public class Kit implements Listener {
     public static void initializeKits() {
         ItemStack enderpearl = new ItemStack(Material.ENDER_PEARL);
         ItemStack ironchest = new ItemStack(Material.IRON_CHESTPLATE);
+        ItemStack nullItem = new ItemStack(Material.AIR);
 
-        addKit(new KitInterface("Enderman", true, enderpearl, true, ""));
+        addKit(new KitInterface("Enderman", true, enderpearl, true, "Enderman"));
         addKit(new KitInterface("Paladino", true, ironchest, false, ""));
-        addKit(new KitInterface("Vida-Extra", false, enderpearl, true, "Vida-Extra"));
+        addKit(new KitInterface("Vida-extra", false, nullItem, true, "Vida-extra"));
     }
 
 }

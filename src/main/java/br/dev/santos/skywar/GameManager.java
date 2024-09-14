@@ -1,12 +1,14 @@
 package br.dev.santos.skywar;
 
 import org.bukkit.*;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Firework;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -14,7 +16,10 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.player.PlayerEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -33,6 +38,11 @@ import java.util.Map;
 public class GameManager implements Listener {
 
     private static Map<Player, PlayerData> playersData = new HashMap<>();
+    private final JavaPlugin plugin;
+
+    public GameManager(JavaPlugin plugin) {
+        this.plugin = plugin;
+    }
 
     public static class PlayerData {
         private String kit;
@@ -262,7 +272,10 @@ public class GameManager implements Listener {
         FileConfiguration config = plugin.getConfig();
 
         PlayerData playerData = playersData.get(player);
-
+        player.setPlayerListName(player.getName());
+        player.setDisplayName(player.getName());
+        player.setCustomName(player.getName());
+        player.setCustomNameVisible(false);
         ScoreBoard.removeScoreBoard(player);
 
         if(playerData.arena == null) {
@@ -301,6 +314,11 @@ public class GameManager implements Listener {
         PlayerData playerData = playersData.get(player);
 
         ScoreBoard.removeScoreBoard(player);
+
+        player.setPlayerListName(player.getName());
+        player.setDisplayName(player.getName());
+        player.setCustomName(player.getName());
+        player.setCustomNameVisible(false);
 
         if(playerData.arena == null) {
             String message = config.getString("messages.not_in_arena");
@@ -352,13 +370,21 @@ public class GameManager implements Listener {
                     for (int i = 0; i < getPlayersInArena(arena).size(); i++) {
                         Player p = getPlayersInArena(arena).get(i);
                         p.setLevel(count);
-                        p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
+                        if(count == 1) {
+                            p.playSound(p.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
+                        }
+                        else {
+                            p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
+                        }
                     }
                     count--;
                 } else {
-                    // Cancela a tarefa quando a contagem termina
                     Bukkit.getScheduler().cancelTask(taskId[0]);
-                    // Executa gameStart apenas uma vez
+                    for (int i = 0; i < getPlayersInArena(arena).size(); i++) {
+                        Player p = getPlayersInArena(arena).get(i);
+                        p.setLevel(count);
+                        p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
+                    }
                     gameStart(player, playerData.arena);
                 }
             }
@@ -387,6 +413,9 @@ public class GameManager implements Listener {
             Player p = getPlayersInArena(arena).get(i);
             p.setGameMode(GameMode.SURVIVAL);
             ScoreBoard.setScoreBoard(p, playersAlive, spectators, arena, 0);
+            p.setPlayerListName(ChatColor.GREEN + p.getName());
+            p.setCustomName(ChatColor.GREEN + p.getName());
+            p.setCustomNameVisible(true);
         }
 
         final int[] timeofMatch = { 5 };
@@ -395,9 +424,9 @@ public class GameManager implements Listener {
             Player p = playersInArena.get(i);
             PlayerData playerDataP = playersData.get(p);
             int warpNumber = i + 1;
-            Kit.giveItems(p, playerDataP.getKit());
 
             p.getInventory().clear();
+            Kit.giveItems(p, playerDataP.getKit());
             p.setLevel(0);
             p.setExp(0);
             partida.setStatus("Playing");
@@ -415,7 +444,7 @@ public class GameManager implements Listener {
                 String delayedMessage = config.getString("messages.pvpenabled");
                 sendMessageToArena(arena, delayedMessage);
             }
-        }.runTaskLater(plugin, 100L); // 100 ticks = 5 seconds
+        }.runTaskLater(plugin, 100L); //
 
         new BukkitRunnable() {
             @Override
@@ -448,6 +477,55 @@ public class GameManager implements Listener {
     };
 
     @EventHandler
+    public void onPlayerClick(PlayerInteractEvent event) {
+        Player player = event.getPlayer();
+        Block block = event.getClickedBlock();
+        if (player.getItemInHand().getType().equals(Material.CHEST)) {
+            Bukkit.dispatchCommand(player, "chestcommands open swkits " + player.getDisplayName());
+        }
+        else if (player.getItemInHand().getType().equals(Material.EMERALD)) {
+            Bukkit.dispatchCommand(player, "chestcommands open swloja " + player.getDisplayName());
+        }
+
+    }
+
+    @EventHandler
+    public void onEnderPearl(PlayerTeleportEvent event) {
+        if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
+            Skywar plugin = Skywar.getPlugin(Skywar.class);
+            FileConfiguration config = plugin.getConfig();
+            Player player = event.getPlayer();
+            PlayerData playerData = playersData.get(player);
+            Location enderPearlLocation = event.getTo();
+            if(playerData.getKit().equals("Enderman")) {
+                String message = config.getString("messages.enderpearl_message");
+                player.sendMessage(message);
+                event.setCancelled(true);
+                enderPearlLocation.getWorld().playSound(enderPearlLocation, Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        Location newLocation = enderPearlLocation.clone().add(0, 15, 0);
+                        player.teleport(newLocation);
+                        player.setNoDamageTicks(60);
+                    }
+                }.runTaskLater(plugin, 60L);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+
+            if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
     public void onPlayerQuit(PlayerQuitEvent event) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
@@ -458,6 +536,10 @@ public class GameManager implements Listener {
         playerData.setKit(null);
         playerData.setStatus(null);
         event.setQuitMessage(null);
+        player.setPlayerListName(player.getName());
+        player.setDisplayName(player.getName());
+        player.setCustomName(player.getName());
+        player.setCustomNameVisible(false);
 
         if (playerData != null) {
             List<Player> playersInArena = getPlayersInArena(playerData.arena);
@@ -480,6 +562,16 @@ public class GameManager implements Listener {
         event.setDeathMessage(null);
         player.spigot().respawn();
 
+        player.setPlayerListName(ChatColor.RED + player.getName());
+        player.setCustomName(ChatColor.RED + player.getName());
+        player.setCustomNameVisible(true);
+
+        if(playerData.getKit().equals("Vida-extra") && !playerData.hasUsedExtraLife()) {
+            player.setPlayerListName(ChatColor.GREEN + player.getName());
+            player.setCustomName(ChatColor.GREEN + player.getName());
+            player.setCustomNameVisible(true);
+        }
+
         EntityDamageEvent lastDamageCause = player.getLastDamageCause();
 
         String deathMessage = "";
@@ -499,11 +591,9 @@ public class GameManager implements Listener {
                     .replace("{player}", player.getDisplayName());
         }
 
-        // Se o jogador tiver o kit "Vida-Extra"
+        // Se o jogador tiver o kit "Vida-extra"
         if (playerData != null) {
-            Bukkit.getLogger().info("Kit: " + playerData.getKit());
-            Bukkit.getLogger().info("Is Dead: " + playerData.isDead());
-            if (playerData.getKit() != null && playerData.getKit().equalsIgnoreCase("Vida-Extra") && !playerData.isDead()) {
+            if (playerData.getKit() != null && playerData.getKit().equalsIgnoreCase("Vida-extra") && !playerData.isDead()) {
                 // Verifica se o jogador já usou a vida extra
                 if (!playerData.hasUsedExtraLife()) {
                     event.getDrops().clear(); // Limpa os drops de itens
@@ -575,7 +665,19 @@ public class GameManager implements Listener {
         player.performCommand("warp " + warpName);
     };
 
-    private static List<Player> getPlayersInArena(String arena) {
+    public static int getLengthMax(String arena) {
+        if(arena .equals("DesertLands")) {
+            return 12;
+        }
+        else if(arena .equals("SkyLands")){
+            return 16;
+        }
+        else {
+            return 0;
+        }
+    };
+
+    public static List<Player> getPlayersInArena(String arena) {
         List<Player> playersInArena = new ArrayList<>();
 
         for (Map.Entry<Player, PlayerData> entry : playersData.entrySet()) {
@@ -656,6 +758,9 @@ public class GameManager implements Listener {
                         p.getInventory().clear();
                         p.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(p, "skywar");
+                        p.setPlayerListName(ChatColor.GREEN + p.getName());
+                        p.setCustomName(ChatColor.GREEN + p.getName());
+                        p.setCustomNameVisible(true);
                     }
                     for (Player spec : specsInArena) {
                         PlayerData player  = getPlayer(spec);
