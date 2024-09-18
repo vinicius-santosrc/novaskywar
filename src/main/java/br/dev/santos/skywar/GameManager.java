@@ -364,9 +364,10 @@ public class GameManager implements Listener {
             public void run() {
                 if (count > 0) {
                     partida.setTimeToStart(count);
-                    String joinMessage = config.getString("messages.seconds_to_start").replace("{seconds}", String.valueOf(count));
-                    sendMessageToArena(playerData.arena, joinMessage);
-
+                    if(count <= 5 || count == 10 || count == 30) {
+                        String joinMessage = config.getString("messages.seconds_to_start").replace("{seconds}", String.valueOf(count));
+                        sendMessageToArena(playerData.arena, joinMessage);
+                    }
                     for (int i = 0; i < getPlayersInArena(arena).size(); i++) {
                         Player p = getPlayersInArena(arena).get(i);
                         p.setLevel(count);
@@ -374,7 +375,9 @@ public class GameManager implements Listener {
                             p.playSound(p.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
                         }
                         else {
-                            p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
+                            if(count <= 5 || count == 10 || count == 30) {
+                                p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
+                            }
                         }
                     }
                     count--;
