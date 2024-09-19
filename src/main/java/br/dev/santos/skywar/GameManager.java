@@ -203,19 +203,6 @@ public class GameManager implements Listener {
 
         PlayerData playerData = playersData.getOrDefault(player, new PlayerData());
 
-        int playersAlive = getPlayersInArena(arena).size();
-        int spectators = getSpectators(arena).size();
-
-        for (int i = 0; i < getPlayersInArena(arena).size(); i++) {
-            Player p = getPlayersInArena(arena).get(i);
-            ScoreBoard.setScoreBoard(p, playersAlive, spectators, arena, 0);
-        }
-
-        for (int i = 0; i < getSpectators(arena).size(); i++) {
-            Player p = getSpectators(arena).get(i);
-            ScoreBoard.setScoreBoard(p, playersAlive, spectators, arena, 0);
-        }
-
         if (playerData.getArena() == null) {
             playerData.setDead(false);
             playerData.setLife(100);
@@ -260,6 +247,22 @@ public class GameManager implements Listener {
                     .replace("{X}", String.valueOf(getPlayersInArena(playerData.arena).size()))
                     .replace("{Y}", MaxPlayers.toString());
             sendMessageToArena(arena, joinMessage);
+
+            List<Player> playersInArena = getPlayersInArena(arena);
+
+            int playersAlive = playersInArena.size();
+            int spectators = getSpectators(arena).size();
+
+            for (int i = 0; i < playersInArena.size(); i++) {
+                Player p = playersInArena.get(i);
+                ScoreBoard.setScoreBoard(p, playersAlive, spectators, arena, 0);
+            }
+
+            for (int i = 0; i < getSpectators(arena).size(); i++) {
+                Player p = getSpectators(arena).get(i);
+                ScoreBoard.setScoreBoard(p, playersAlive, spectators, arena, 0);
+            }
+
         } else {
             String message = config.getString("messages.error_arena");
             player.sendMessage(message);
@@ -270,8 +273,23 @@ public class GameManager implements Listener {
     public static void leaveGame(Player player) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
-
         PlayerData playerData = playersData.get(player);
+
+        List<Player> playersInArena = getPlayersInArena(playerData.getArena());
+
+        int playersAlive = playersInArena.size();
+        int spectators = getSpectators(playerData.getArena()).size();
+
+        for (int i = 0; i < playersInArena.size(); i++) {
+            Player p = playersInArena.get(i);
+            ScoreBoard.setScoreBoard(p, playersAlive, spectators, playerData.getArena(), 0);
+        }
+
+        for (int i = 0; i < getSpectators(playerData.getArena()).size(); i++) {
+            Player p = getSpectators(playerData.getArena()).get(i);
+            ScoreBoard.setScoreBoard(p, playersAlive, spectators, playerData.getArena(), 0);
+        }
+
         player.setPlayerListName(player.getName());
         player.setDisplayName(player.getName());
         player.setCustomName(player.getName());
@@ -350,7 +368,7 @@ public class GameManager implements Listener {
         int spectators = getSpectators(arena).size();
 
         Partida partida = new Partida();
-        int i = 10;
+        int i = 60;
         partida.setTimeToStart(i);
 
         // Cria um array final para armazenar o ID da tarefa
@@ -364,7 +382,7 @@ public class GameManager implements Listener {
             public void run() {
                 if (count > 0) {
                     partida.setTimeToStart(count);
-                    if(count <= 5 || count == 10 || count == 30) {
+                    if(count <= 5 || count == 10 || count == 30 || count == 60 || count == 120 || count == 180) {
                         String joinMessage = config.getString("messages.seconds_to_start").replace("{seconds}", String.valueOf(count));
                         sendMessageToArena(playerData.arena, joinMessage);
                     }
@@ -469,7 +487,7 @@ public class GameManager implements Listener {
                 }
 
                 if (playersInArena.size() == 1) {
-                    endGame(getPlayersInArena(arena).get(0), playerData.arena);
+                    endGame(getPlayersInArena(arena).get(0), playerData.getArena());
                     cancel();
                 }
 
@@ -776,6 +794,14 @@ public class GameManager implements Listener {
                         spec.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(spec, "skywar");
                     }
+
+                    try {
+                        Skywar.resetWorldByArena(arena);
+                    } catch (Exception e) {
+                        Bukkit.getLogger().severe("Erro ao resetar a arena: " + e.getMessage());
+                        e.printStackTrace();
+                    }
+
                 }
             }
 
@@ -798,13 +824,10 @@ public class GameManager implements Listener {
                             cancel();
                         }
                     }
-                }.runTaskTimer(Skywar.getPlugin(Skywar.class), 0L, 10L);
+                }.runTaskTimer(Skywar.getPlugin(Skywar.class), 0L, 40L);
             }
 
-        }, 0L, 20L).getTaskId();
-
-        Skywar.resetWorldByArena(arena);
-
+        }, 0L, 40L).getTaskId();
     }
 
     public static String getPlayerData(Player player) {

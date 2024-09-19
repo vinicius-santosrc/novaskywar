@@ -16,6 +16,7 @@ messages:
   player_joined_arena: "§3[SkyWar] §6{player} se juntou a partida! ({X}/{Y})"
   player_leave_arena: "§3[SkyWar] §6{player} saiu da partida! ({X}/{Y})"
   seconds_to_start: "§3[SkyWar] §6Começando em §f{seconds} segundos§6!"
+  minutes_to_start: "§3[SkyWar] §6Começando em §f{minutes} minutos§6!"
   game_start: "§3[SkyWar] §6Boa sorte! O jogo começou!"
   pvp_message: "§3[SkyWar] §6O PvP será liberado em {seconds} segundos!"
   winning_message: "§3[SkyWar] §6Parabéns! Você venceu o jogo!"

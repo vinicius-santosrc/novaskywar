@@ -18,33 +18,46 @@ public class ResetWorldCommand implements CommandExecutor {
     public ResetWorldCommand(String worldName, File worldBackupFolder) {
         this.worldName = worldName;
         this.worldBackupFolder = worldBackupFolder;
+        resetWorld();
     }
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
+        if (!(sender instanceof Player)) {
+            Bukkit.getLogger().info("Somente jogadores podem executar esse comando.");
+            return false;
+        }
         Player player = (Player) sender;
+        boolean result = resetWorld();
+
+        if (result) {
+            player.sendMessage(ChatColor.GREEN + "O mundo foi restaurado com sucesso!");
+        } else {
+            player.sendMessage(ChatColor.RED + "Falha ao restaurar o mundo.");
+        }
+
+        return result;
+    }
+
+    public boolean resetWorld() {
         World world = Bukkit.getWorld(worldName);
 
         if (world == null) {
-            player.sendMessage(ChatColor.RED + "O mundo especificado não foi encontrado.");
+            Bukkit.getLogger().info("O mundo especificado não foi encontrado.");
             return false;
         }
 
-        // Descarrega o mundo
         Bukkit.unloadWorld(world, false);
-        player.sendMessage(ChatColor.YELLOW + "Mundo descarregado.");
+        Bukkit.getLogger().info("Mundo descarregado: " + worldName);
 
-        // Exclui o mundo atual
         File worldFolder = world.getWorldFolder();
         deleteFolder(worldFolder);
 
-        // Copia o backup para o diretório de mundos
         File backupFolder = new File(worldBackupFolder, worldName);
         copyFolder(backupFolder, worldFolder);
 
-        // Recarrega o mundo
         Bukkit.createWorld(new WorldCreator(worldName));
-        player.sendMessage(ChatColor.GREEN + "O mundo foi restaurado com sucesso!");
+        Bukkit.getLogger().info(worldName + " foi restaurado.");
 
         return true;
     }
