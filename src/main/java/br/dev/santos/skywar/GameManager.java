@@ -1,6 +1,7 @@
 package br.dev.santos.skywar;
 
 import org.bukkit.*;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -45,7 +46,7 @@ public class GameManager implements Listener {
     }
 
     public static class PlayerData {
-        private String kit;
+        private String kit = null;
         private int life;
         private boolean isDead;
         private String status;
@@ -368,7 +369,7 @@ public class GameManager implements Listener {
         int spectators = getSpectators(arena).size();
 
         Partida partida = new Partida();
-        int i = 60;
+        int i = 10;
         partida.setTimeToStart(i);
 
         // Cria um array final para armazenar o ID da tarefa
@@ -617,19 +618,33 @@ public class GameManager implements Listener {
             if (playerData.getKit() != null && playerData.getKit().equalsIgnoreCase("Vida-extra") && !playerData.isDead()) {
                 // Verifica se o jogador já usou a vida extra
                 if (!playerData.hasUsedExtraLife()) {
-                    event.getDrops().clear(); // Limpa os drops de itens
-                    teleportPlayerToWarp(player, playerData.getArena() + "-" + playerData.getIsland()); // Teleporta para a warp configurada
+                    // Salva o inventário e a armadura do jogador
+                    ItemStack[] savedInventory = player.getInventory().getContents();
+                    ItemStack[] savedArmor = player.getInventory().getArmorContents();
 
+                    // Limpa os drops de itens
+                    event.getDrops().clear();
+
+                    // Teleporta para a warp configurada
+                    teleportPlayerToWarp(player, playerData.getArena() + "-" + playerData.getIsland());
+
+                    // Restaura o inventário e a armadura do jogador
+                    player.getInventory().setContents(savedInventory);
+                    player.getInventory().setArmorContents(savedArmor);
+
+                    // Envia mensagens
                     String extraLifeMessage = config.getString("messages.extralifekit_message")
                             .replace("{player}", player.getDisplayName());
                     sendMessageToArena(playerData.getArena(), extraLifeMessage);
 
                     String extraLifeMessageToPlayer = config.getString("messages.extralife_message_to_player");
-
                     player.sendMessage(extraLifeMessageToPlayer);
 
+                    // Marca que o jogador usou a vida extra
                     playerData.setUsedExtraLife(true);
-                } else {
+                }
+
+                else {
                     playerData.setDead(true);
                     playerData.setKit(null);
                     playerData.setUsedExtraLife(false);
@@ -755,12 +770,18 @@ public class GameManager implements Listener {
         taskId[0] = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             int i = 15;
             int count = i;
+            boolean fireworkslanched = false;
 
             PlayerData playerData = playersData.get(player);
 
             @Override
             public void run() {
-                startFireworks(player, arena, playerData);
+                player.setAllowFlight(true);
+                player.setFlying(true);
+                if(!fireworkslanched) {
+                    startFireworks(player, arena, playerData);
+                    fireworkslanched = true;
+                }
                 if (count > 0) {
                     count--;
                 } else {
@@ -770,30 +791,37 @@ public class GameManager implements Listener {
                     List<Player> specsInArena = new ArrayList<>(getSpectators(arena));
 
                     for (Player p : playersInArena) {
-                        PlayerData player  = getPlayer(p);
+                        PlayerData player = getPlayer(p);
                         player.setDead(false);
                         player.setArena(null);
                         player.setKit(null);
                         player.setStatus(null);
                         player.setIsland(0);
+                        p.setFlying(false);
                         p.getInventory().clear();
+                        p.getInventory().setArmorContents(new ItemStack[4]);
+                        p.setAllowFlight(false);
                         p.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(p, "skywar");
                         p.setPlayerListName(ChatColor.GREEN + p.getName());
                         p.setCustomName(ChatColor.GREEN + p.getName());
                         p.setCustomNameVisible(true);
                     }
+
                     for (Player spec : specsInArena) {
-                        PlayerData player  = getPlayer(spec);
+                        PlayerData player = getPlayer(spec);
                         player.setDead(false);
                         player.setArena(null);
                         player.setKit(null);
                         player.setStatus(null);
                         player.setIsland(0);
                         spec.getInventory().clear();
+                        spec.setFlying(false);
+                        spec.getInventory().setArmorContents(new ItemStack[4]);
                         spec.performCommand("skywar leaveafterwin");
                         teleportPlayerToWarp(spec, "skywar");
                     }
+
 
                     try {
                         Skywar.resetWorldByArena(arena);
@@ -806,28 +834,53 @@ public class GameManager implements Listener {
             }
 
             public void startFireworks(Player player, String arena, PlayerData playerData) {
+                Firework firework = player.getWorld().spawn(player.getLocation(), Firework.class);
+                FireworkMeta meta = firework.getFireworkMeta();
+                meta.addEffect(FireworkEffect.builder()
+                        .withColor(Color.RED, Color.BLUE)
+                        .withFlicker()
+                        .withTrail()
+                        .with(FireworkEffect.Type.BALL_LARGE)
+                        .build());
+                meta.setPower(1);
+                firework.setFireworkMeta(meta);
+
                 new BukkitRunnable() {
+                    int fireworksLaunched = 0;
+
                     @Override
                     public void run() {
-                        if (playerData.getArena() != null) {
-                            Firework firework = player.getWorld().spawn(player.getLocation(), Firework.class);
-                            FireworkMeta meta = firework.getFireworkMeta();
-                            meta.addEffect(FireworkEffect.builder()
-                                    .withColor(Color.RED, Color.BLUE)
-                                    .withFlicker()
-                                    .withTrail()
-                                    .with(FireworkEffect.Type.BALL_LARGE)
-                                    .build());
-                            meta.setPower(1);
-                            firework.setFireworkMeta(meta);
-                        } else {
-                            cancel();
+                        if (fireworksLaunched >= 24) {
+                            cancel(); // Para após lançar 12 fogos
+                            return;
                         }
+
+                        // Calcula a direção para cada fogo de artifício
+                        double angle = Math.toRadians((360.0 / 12) * fireworksLaunched);
+                        double xOffset = Math.cos(angle) * 30;
+                        double zOffset = Math.sin(angle) * 30;
+
+                        Location fireworkLocation = player.getLocation().add(xOffset, 0, zOffset);
+
+                        Firework distantFirework = player.getWorld().spawn(fireworkLocation, Firework.class);
+                        FireworkMeta distantMeta = distantFirework.getFireworkMeta();
+                        distantMeta.addEffect(FireworkEffect.builder()
+                                .withColor(Color.RED, Color.BLUE)
+                                .withFlicker()
+                                .withTrail()
+                                .with(FireworkEffect.Type.BALL_LARGE)
+                                .build());
+                        distantMeta.setPower(1);
+                        distantFirework.setFireworkMeta(distantMeta);
+
+                        fireworksLaunched++;
                     }
-                }.runTaskTimer(Skywar.getPlugin(Skywar.class), 0L, 40L);
+                }.runTaskTimer(plugin, 0L, 1L); //
+
             }
 
-        }, 0L, 40L).getTaskId();
+
+        }, 0L, 20L).getTaskId();
     }
 
     public static String getPlayerData(Player player) {

@@ -37,9 +37,9 @@ messages:
   pvpenabled: "§3[SkyWar] §6O PvP está liberado!"
 
   help:
-    - "§6----- §3[SkyWar] &6-----"
-    - "§6/skywar create <mapa> - Criação de mapas"
-    - "§6/skywar remove <mapa> - Remoção de mapas"
-    - "§6/start - Força o início da partida"
-    - "§6/skywar help - Ajuda com o plugin"
+    - "§6----- §3[SkyWar] §6-----"
+    - "§6/skywar create <mapa> - §fCriação de mapas"
+    - "§6/skywar remove <mapa> - §fRemoção de mapas"
+    - "§6/start - §fForça o início da partida"
+    - "§6/skywar help - §fAjuda com o plugin"
     - "------------------"
