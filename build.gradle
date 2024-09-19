@@ -22,9 +22,17 @@ repositories {
 
 dependencies {
     compileOnly "org.spigotmc:spigot-api:1.12-R0.1-SNAPSHOT"
-    compileOnly 'com.sk89q.worldedit:worldedit-bukkit:7.2.0'
     implementation 'com.google.code.gson:gson:2.10.1'
+}
 
+jar {
+    archiveBaseName.set('SkyWar')
+    archiveVersion.set('1.0')
+    manifest {
+        attributes(
+            'Main-Class': 'br.dev.santos.skywar.Skywar'
+        )
+    }
 }
 
 def targetJavaVersion = 8
