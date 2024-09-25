@@ -156,6 +156,19 @@ public class GameManager implements Listener {
         player.sendMessage(message);
     }
 
+    public static void buyNewKit(Player player, String kit) {
+        Skywar plugin = Skywar.getPlugin(Skywar.class);
+        FileConfiguration config = plugin.getConfig();
+        String Credits = "1000";
+
+        PlayerData playerData = playersData.get(player);
+        String message = config.getString("messages.buy_new_kit")
+                .replace("{kit}", kit)
+                .replace("{credits}", Credits);
+        ;
+        player.sendMessage(message);
+    }
+
     public static void removeKit(Player player) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
@@ -203,7 +216,6 @@ public class GameManager implements Listener {
         FileConfiguration config = plugin.getConfig();
 
         PlayerData playerData = playersData.getOrDefault(player, new PlayerData());
-
         if (playerData.getArena() == null) {
             playerData.setDead(false);
             playerData.setLife(100);
@@ -212,10 +224,6 @@ public class GameManager implements Listener {
             playerData.setArena(arena);
 
             playersData.put(player, playerData);
-
-            String message = config.getString("messages.join_arena")
-                    .replace("{arena}", arena);
-            player.sendMessage(message);
 
             player.getInventory().clear();
             player.setGameMode(GameMode.ADVENTURE);
@@ -297,15 +305,12 @@ public class GameManager implements Listener {
         player.setCustomNameVisible(false);
         ScoreBoard.removeScoreBoard(player);
 
-        if(playerData.arena == null) {
+        if (playerData.arena == null) {
             String message = config.getString("messages.not_in_arena");
             player.sendMessage(message);
-        }
-        else {
+        } else {
             if (playerData != null) {
                 player.performCommand("warp skywar");
-                String message = config.getString("messages.leave_arena");
-                player.sendMessage(message);
 
                 player.getInventory().clear();
 
@@ -339,11 +344,10 @@ public class GameManager implements Listener {
         player.setCustomName(player.getName());
         player.setCustomNameVisible(false);
 
-        if(playerData.arena == null) {
+        if (playerData.arena == null) {
             String message = config.getString("messages.not_in_arena");
             player.sendMessage(message);
-        }
-        else {
+        } else {
             if (playerData != null) {
                 ScoreBoard.removeScoreBoard(player);
                 player.performCommand("warp skywar");
@@ -383,18 +387,17 @@ public class GameManager implements Listener {
             public void run() {
                 if (count > 0) {
                     partida.setTimeToStart(count);
-                    if(count <= 5 || count == 10 || count == 30 || count == 60 || count == 120 || count == 180) {
+                    if (count <= 5 || count == 10 || count == 30 || count == 60 || count == 120 || count == 180) {
                         String joinMessage = config.getString("messages.seconds_to_start").replace("{seconds}", String.valueOf(count));
                         sendMessageToArena(playerData.arena, joinMessage);
                     }
                     for (int i = 0; i < getPlayersInArena(arena).size(); i++) {
                         Player p = getPlayersInArena(arena).get(i);
                         p.setLevel(count);
-                        if(count == 1) {
+                        if (count == 1) {
                             p.playSound(p.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
-                        }
-                        else {
-                            if(count <= 5 || count == 10 || count == 30) {
+                        } else {
+                            if (count <= 5 || count == 10 || count == 30) {
                                 p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
                             }
                         }
@@ -440,7 +443,7 @@ public class GameManager implements Listener {
             p.setCustomNameVisible(true);
         }
 
-        final int[] timeofMatch = { 5 };
+        final int[] timeofMatch = {5};
 
         for (int i = 0; i < playersInArena.size(); i++) {
             Player p = playersInArena.get(i);
@@ -496,7 +499,9 @@ public class GameManager implements Listener {
         }.runTaskTimer(plugin, 20L, 20L);
 
 
-    };
+    }
+
+    ;
 
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent event) {
@@ -504,8 +509,7 @@ public class GameManager implements Listener {
         Block block = event.getClickedBlock();
         if (player.getItemInHand().getType().equals(Material.CHEST)) {
             Bukkit.dispatchCommand(player, "chestcommands open swkits " + player.getDisplayName());
-        }
-        else if (player.getItemInHand().getType().equals(Material.EMERALD)) {
+        } else if (player.getItemInHand().getType().equals(Material.EMERALD)) {
             Bukkit.dispatchCommand(player, "chestcommands open swloja " + player.getDisplayName());
         }
 
@@ -519,7 +523,7 @@ public class GameManager implements Listener {
             Player player = event.getPlayer();
             PlayerData playerData = playersData.get(player);
             Location enderPearlLocation = event.getTo();
-            if(playerData.getKit().equals("Enderman")) {
+            if (playerData.getKit().equals("Enderman")) {
                 String message = config.getString("messages.enderpearl_message");
                 player.sendMessage(message);
                 event.setCancelled(true);
@@ -591,7 +595,7 @@ public class GameManager implements Listener {
         player.setCustomName(ChatColor.RED + player.getName());
         player.setCustomNameVisible(true);
 
-        if(playerData.getKit().equals("Vida-extra") && !playerData.hasUsedExtraLife()) {
+        if (playerData.getKit().equals("Vida-extra") && !playerData.hasUsedExtraLife()) {
             player.setPlayerListName(ChatColor.GREEN + player.getName());
             player.setCustomName(ChatColor.GREEN + player.getName());
             player.setCustomNameVisible(true);
@@ -624,15 +628,22 @@ public class GameManager implements Listener {
                     ItemStack[] savedInventory = player.getInventory().getContents();
                     ItemStack[] savedArmor = player.getInventory().getArmorContents();
 
-                    // Limpa os drops de itens
+// Limpa os drops de itens
                     event.getDrops().clear();
 
-                    // Teleporta para a warp configurada
+// Teleporta para a warp configurada
                     teleportPlayerToWarp(player, playerData.getArena() + "-" + playerData.getIsland());
 
-                    // Restaura o inventário e a armadura do jogador
-                    player.getInventory().setContents(savedInventory);
-                    player.getInventory().setArmorContents(savedArmor);
+                    // Adiciona um pequeno delay antes de restaurar o inventário e a armadura
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            // Restaura o inventário e a armadura do jogador
+                            player.getInventory().setContents(savedInventory);
+                            player.getInventory().setArmorContents(savedArmor);
+                            player.updateInventory(); // Atualiza o inventário do jogador para garantir que seja refletido no cliente
+                        }
+                    }.runTaskLater(Skywar.getPlugin(Skywar.class), 5L); // Pequeno delay de 5 ticks (0.25 segundos)
 
                     // Envia mensagens
                     String extraLifeMessage = config.getString("messages.extralifekit_message")
@@ -644,9 +655,8 @@ public class GameManager implements Listener {
 
                     // Marca que o jogador usou a vida extra
                     playerData.setUsedExtraLife(true);
-                }
 
-                else {
+                } else {
                     playerData.setDead(true);
                     playerData.setKit("default");
                     playerData.setUsedExtraLife(false);
@@ -701,19 +711,21 @@ public class GameManager implements Listener {
 
     private static void teleportPlayerToWarp(Player player, String warpName) {
         player.performCommand("warp " + warpName);
-    };
+    }
+
+    ;
 
     public static int getLengthMax(String arena) {
-        if(arena .equals("DesertLands")) {
+        if (arena.equals("DesertLands")) {
             return 12;
-        }
-        else if(arena .equals("SkyLands")){
+        } else if (arena.equals("SkyLands")) {
             return 16;
-        }
-        else {
+        } else {
             return 0;
         }
-    };
+    }
+
+    ;
 
     public static List<Player> getPlayersInArena(String arena) {
         List<Player> playersInArena = new ArrayList<>();
@@ -723,7 +735,7 @@ public class GameManager implements Listener {
             PlayerData playerData = entry.getValue();
 
             if (arena.equals(playerData.getArena())) {
-                if(!playerData.isDead()){
+                if (!playerData.isDead()) {
                     playersInArena.add(player);
                 }
             }
@@ -740,7 +752,7 @@ public class GameManager implements Listener {
             PlayerData playerData = entry.getValue();
 
             if (arena.equals(playerData.getArena())) {
-                if(playerData.isDead()){
+                if (playerData.isDead()) {
                     playersInArena.add(player);
                 }
             }
@@ -760,7 +772,7 @@ public class GameManager implements Listener {
         String messageFinished = config.getString("messages.game_finished").replace("{player}", player.getDisplayName());
         sendMessageToArena(arena, messageFinished);
         String messageLobby = config.getString("messages.lobby_message");
-        sendMessageToArena(arena,messageLobby);
+        sendMessageToArena(arena, messageLobby);
 
         player.performCommand("warp " + arena + "-winner");
 
@@ -780,7 +792,7 @@ public class GameManager implements Listener {
             public void run() {
                 player.setAllowFlight(true);
                 player.setFlying(true);
-                if(!fireworkslanched) {
+                if (!fireworkslanched) {
                     startFireworks(player, arena, playerData);
                     fireworkslanched = true;
                 }
@@ -890,11 +902,9 @@ public class GameManager implements Listener {
 
         if (playerData != null) {
             return playerData.getStatus();
-        }
-        else if (playerData == null) {
+        } else if (playerData == null) {
             return "NotPlaying";
-        }
-        else {
+        } else {
             return "NotPlaying";
         }
     }

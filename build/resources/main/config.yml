@@ -11,6 +11,10 @@ messages:
   noactual_kit: "§cNenhum kit selecionado."
   error_arena: "§cVocê já está em uma arena."
   not_in_arena: "§cVocê não está em uma arena."
+  no_credits_enoght: "§cVocê não tem créditos suficientes."
+  buy_new_kit:
+    - "§aVocê adiquiriu o kit {kit} por {credits} Créditos."
+    - "§aUse o menu de kits para ativá-lo"
   join_arena: "§aVocê se juntou a sala SW-{arena}"
   leave_arena: "§cVocê saiu da arena."
   player_joined_arena: "§3[SkyWar] §6{player} se juntou a partida! ({X}/{Y})"

@@ -77,6 +77,14 @@ public final class Skywar extends JavaPlugin implements Listener {
                     player.setGameMode(GameMode.ADVENTURE);
                     return true;
                 }
+                else if (args[0].equalsIgnoreCase("comprar")) {
+                    if (args.length > 1) {
+                        GameManager.buyNewKit(player, args[1]);
+                        return true;
+                    } else {
+                        return true;
+                    }
+                }
                 else if (args[0].equalsIgnoreCase("start")) {
                     if (args.length > 1) {
                         GameManager.startGame(player, args[1]);
