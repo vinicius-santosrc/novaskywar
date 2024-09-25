@@ -162,7 +162,7 @@ public class GameManager implements Listener {
 
         PlayerData playerData = playersData.get(player);
         if (playerData != null) {
-            playerData.setKit(null);
+            playerData.setKit("default");
         }
 
         String message = config.getString("messages.kit_removed");
@@ -174,7 +174,7 @@ public class GameManager implements Listener {
         FileConfiguration config = plugin.getConfig();
 
         PlayerData playerData = playersData.get(player);
-        if (playerData != null && playerData.getKit() != null) {
+        if (playerData != null && !playerData.getKit().equals("default")) {
             String message = config.getString("messages.actual_kit")
                     .replace("{kit}", playerData.getKit());
             player.sendMessage(message);
@@ -207,7 +207,7 @@ public class GameManager implements Listener {
         if (playerData.getArena() == null) {
             playerData.setDead(false);
             playerData.setLife(100);
-            playerData.setKit(null);
+            playerData.setKit("default");
             playerData.setStatus("Playing");
             playerData.setArena(arena);
 
@@ -319,7 +319,7 @@ public class GameManager implements Listener {
                 sendMessageToArena(playerData.arena, joinMessage);
                 playerData.setDead(false);
                 playerData.setLife(100);
-                playerData.setKit(null);
+                playerData.setKit("default");
                 playerData.setStatus(null);
                 playerData.setArena(null);
             }
@@ -352,7 +352,7 @@ public class GameManager implements Listener {
 
                 playerData.setDead(false);
                 playerData.setLife(100);
-                playerData.setKit(null);
+                playerData.setKit("default");
                 playerData.setStatus(null);
                 playerData.setArena(null);
             }
@@ -540,8 +540,9 @@ public class GameManager implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
+            PlayerData playerData = playersData.get(player);
 
-            if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (playerData.getKit().equals("Enderman") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
             }
         }
@@ -555,7 +556,7 @@ public class GameManager implements Listener {
         PlayerData playerData = playersData.get(player);
 
         playerData.setDead(true);
-        playerData.setKit(null);
+        playerData.setKit("default");
         playerData.setStatus(null);
         event.setQuitMessage(null);
         player.setPlayerListName(player.getName());
@@ -579,10 +580,12 @@ public class GameManager implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
-        Player player = event.getEntity();
+        Player player = event.getEntity().getPlayer();
         PlayerData playerData = playersData.get(player);
         event.setDeathMessage(null);
         player.spigot().respawn();
+
+        Bukkit.getLogger().info(playerData.toString());
 
         player.setPlayerListName(ChatColor.RED + player.getName());
         player.setCustomName(ChatColor.RED + player.getName());
@@ -612,7 +615,6 @@ public class GameManager implements Listener {
             deathMessage = config.getString("messages.messageDeath")
                     .replace("{player}", player.getDisplayName());
         }
-
         // Se o jogador tiver o kit "Vida-extra"
         if (playerData != null) {
             if (playerData.getKit() != null && playerData.getKit().equalsIgnoreCase("Vida-extra") && !playerData.isDead()) {
@@ -646,7 +648,7 @@ public class GameManager implements Listener {
 
                 else {
                     playerData.setDead(true);
-                    playerData.setKit(null);
+                    playerData.setKit("default");
                     playerData.setUsedExtraLife(false);
                     playerData.setStatus("Espectador");
 
@@ -670,7 +672,7 @@ public class GameManager implements Listener {
                 }
             } else {
                 playerData.setDead(true);
-                playerData.setKit(null);
+                playerData.setKit("default");
                 playerData.setUsedExtraLife(false);
                 playerData.setStatus("Espectador");
 
