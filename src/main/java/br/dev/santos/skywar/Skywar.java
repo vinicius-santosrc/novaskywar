@@ -15,9 +15,11 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.File;
+import java.util.List;
 
 public final class Skywar extends JavaPlugin implements Listener {
     private static File backupFolder;
+
     @Override
     public void onEnable() {
         saveDefaultConfig();
@@ -56,13 +58,12 @@ public final class Skywar extends JavaPlugin implements Listener {
                     player.sendMessage(config.getString("messages.incorrect_usage"));
                     return true;
                 } else if (args[0].equalsIgnoreCase("help")) {
-                    else if (args[0].equalsIgnoreCase("help")) {
-                        List<String> helpMessages = config.getStringList("messages.help");
-                        for (String message : helpMessages) {
-                            player.sendMessage(message);
-                        }
-                        return true;
+                    List<String> helpMessages = config.getStringList("messages.help");
+                    for (String message : helpMessages) {
+                        player.sendMessage(message);
                     }
+                    return true;
+
                 } else if (args[0].equalsIgnoreCase("entrar")) {
                     if (args.length > 1) {
                         GameManager.joinGame(player, args[1]);
@@ -71,26 +72,22 @@ public final class Skywar extends JavaPlugin implements Listener {
                         player.sendMessage(config.getString("messages.unknown_command"));
                         return true;
                     }
-                }
-                else if (args[0].equalsIgnoreCase("sair")) {
+                } else if (args[0].equalsIgnoreCase("sair")) {
                     GameManager.leaveGame(player);
                     player.setGameMode(GameMode.ADVENTURE);
                     return true;
-                }
-                else if(args[0].equalsIgnoreCase("leaveafterwin")) {
+                } else if (args[0].equalsIgnoreCase("leaveafterwin")) {
                     GameManager.leaveGameAfterFinished(player);
                     player.setGameMode(GameMode.ADVENTURE);
                     return true;
-                }
-                else if (args[0].equalsIgnoreCase("comprar")) {
+                } else if (args[0].equalsIgnoreCase("comprar")) {
                     if (args.length > 1) {
                         GameManager.buyNewKit(player, args[1]);
                         return true;
                     } else {
                         return true;
                     }
-                }
-                else if (args[0].equalsIgnoreCase("start")) {
+                } else if (args[0].equalsIgnoreCase("start")) {
                     if (args.length > 1) {
                         GameManager.startGame(player, args[1]);
                         return true;

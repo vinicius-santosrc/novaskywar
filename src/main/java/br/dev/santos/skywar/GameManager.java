@@ -159,14 +159,13 @@ public class GameManager implements Listener {
 
         PlayerData playerData = playersData.get(player);
 
-        List<String> helpMessages = config.getStringList("messages.buy_new_kit")
-                .replace("{kit}", kit)
-                .replace("{credits}", Credits);
+        List<String> helpMessages = config.getStringList("messages.buy_new_kit");
+
         for (String message : helpMessages) {
-            player.sendMessage(message);
+            player.sendMessage(message
+                    .replace("{kit}", kit)
+                    .replace("{credits}", Credits));
         }
-        
-        player.sendMessage(message);
     }
 
     public static void removeKit(Player player) {
@@ -240,7 +239,7 @@ public class GameManager implements Listener {
             ItemStack emerald = new ItemStack(Material.EMERALD);
             ItemMeta emeraldMeta = emerald.getItemMeta();
             if (emeraldMeta != null) {
-                emeraldMeta.setDisplayName("§aLoja");
+                emeraldMeta.setDisplayName("§6Loja");
                 emerald.setItemMeta(emeraldMeta);
             }
 
@@ -511,10 +510,6 @@ public class GameManager implements Listener {
 
         if (player.getLocation().getY() < 0 && playerData.getStatus().equals("WaitingLobby")) {
             teleportPlayerToWarp(player, "waitingsw");
-        }
-        else if(player.getLocation().getY() < 0 && playerData.getStatus().equals("Playing")) {
-            player.setHealth(0);
-            player.setHealthScale(0);
         }
     }
 
@@ -799,10 +794,9 @@ public class GameManager implements Listener {
         String messageLobby = config.getString("messages.lobby_message");
         sendMessageToArena(arena, messageLobby);
         String Credits = "1000";
-        List<String> messageCredits = config.getStringList("messages.winner_message")
-                .replace("{creditos}", Credits);
-        for (String message : messageCredits) {
-            player.sendMessage(message);
+        List<String> messageCredits = config.getStringList("messages.winner_message");
+        for (String messageContent : messageCredits) {
+            player.sendMessage(messageContent.replace("{creditos}", Credits));
         }
 
         player.performCommand("warp " + arena + "-winner");
