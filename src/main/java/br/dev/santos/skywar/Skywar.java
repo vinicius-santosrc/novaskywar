@@ -98,7 +98,7 @@ public final class Skywar extends JavaPlugin implements Listener {
                     return true;
                 } else if (args[0].equalsIgnoreCase("kit")) {
                     if (args.length > 1) {
-                        if (GameManager.getPlayerData(player).equals("Playing")) {
+                        if (GameManager.getPlayerData(player).equals("WaitingLobby")) {
                             if (args[1].equalsIgnoreCase("remove")) {
                                 GameManager.removeKit(player);
                                 return true;

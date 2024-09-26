@@ -17,24 +17,20 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
-import org.bukkit.event.player.PlayerEvent;
-import org.bukkit.event.player.PlayerInteractEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.event.player.*;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
 import java.io.File;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 public class GameManager implements Listener {
 
@@ -220,7 +216,7 @@ public class GameManager implements Listener {
             playerData.setDead(false);
             playerData.setLife(100);
             playerData.setKit("default");
-            playerData.setStatus("Playing");
+            playerData.setStatus("WaitingLobby");
             playerData.setArena(arena);
 
             playersData.put(player, playerData);
@@ -441,6 +437,7 @@ public class GameManager implements Listener {
             p.setPlayerListName(ChatColor.GREEN + p.getName());
             p.setCustomName(ChatColor.GREEN + p.getName());
             p.setCustomNameVisible(true);
+            playerData.setStatus("Playing");
         }
 
         final int[] timeofMatch = {5};
@@ -504,6 +501,20 @@ public class GameManager implements Listener {
     ;
 
     @EventHandler
+    public void onPlayerMove(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+        PlayerData playerData = playersData.get(player);
+
+        if (player.getLocation().getY() < 0 && playerData.getStatus().equals("WaitingLobby")) {
+            teleportPlayerToWarp(player, "waitingsw");
+        }
+        else if(player.getLocation().getY() < 0 && playerData.getStatus().equals("Playing")) {
+            player.setHealth(0);
+            player.setHealthScale(0);
+        }
+    }
+
+    @EventHandler
     public void onPlayerClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         Block block = event.getClickedBlock();
@@ -546,7 +557,7 @@ public class GameManager implements Listener {
             Player player = (Player) event.getEntity();
             PlayerData playerData = playersData.get(player);
 
-            if (playerData.getKit().equals("Enderman") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (playerData.getKit().equals("Enderman") || playerData.getStatus().equals("WaitingLobby") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
             }
         }
@@ -588,8 +599,8 @@ public class GameManager implements Listener {
         PlayerData playerData = playersData.get(player);
         event.setDeathMessage(null);
         player.spigot().respawn();
-
-        Bukkit.getLogger().info(playerData.toString());
+        String message = config.getString("messages.deathmessage");
+        player.sendMessage(message);
 
         player.setPlayerListName(ChatColor.RED + player.getName());
         player.setCustomName(ChatColor.RED + player.getName());
@@ -608,6 +619,16 @@ public class GameManager implements Listener {
             EntityDamageByEntityEvent entityDamageEvent = (EntityDamageByEntityEvent) lastDamageCause;
             if (entityDamageEvent.getDamager() instanceof Player) {
                 Player killer = (Player) entityDamageEvent.getDamager();
+                PlayerData killerData = playersData.get(killer);
+
+                if(killerData.getKit().equals("Vampiro")) {
+                    killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 1));
+                }
+                if(killerData.getKit().equals("Assassino")) {
+                    double health = killer.getHealth();
+                    killer.setHealth(health + 5);
+                }
+
                 deathMessage = config.getString("messages.player_killed_oponent")
                         .replace("{player}", player.getDisplayName())
                         .replace("{killer}", killer.getDisplayName());
