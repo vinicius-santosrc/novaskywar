@@ -7,7 +7,7 @@ messages:
   player_only: "Apenas jogadores podem usar esse comando."
   kit_selected: "§aVocê ativou o kit {kit}."
   kit_removed: "§cKit removido com sucesso."
-  actual_kit: "§bSeu kit selecionado é o: {kit}."
+  actual_kit: "§bSeu kit selecionado é o: {kit}"
   noactual_kit: "§cNenhum kit selecionado."
   error_arena: "§cVocê já está em uma arena."
   not_in_arena: "§cVocê não está em uma arena."
