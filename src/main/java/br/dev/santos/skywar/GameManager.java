@@ -401,7 +401,7 @@ public class GameManager implements Listener {
                         if (count == 1) {
                             p.playSound(p.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
                         } else {
-                            if (count <= 5 || count == 10 || count == 30) {
+                            if (count <= 10 || count == 30 || count == 30 || count == 60 || count == 120 || count == 180) {
                                 p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
                             }
                         }
