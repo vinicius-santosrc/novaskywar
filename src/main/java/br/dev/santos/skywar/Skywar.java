@@ -56,8 +56,13 @@ public final class Skywar extends JavaPlugin implements Listener {
                     player.sendMessage(config.getString("messages.incorrect_usage"));
                     return true;
                 } else if (args[0].equalsIgnoreCase("help")) {
-                    player.sendMessage(config.getString("messages.help"));
-                    return true;
+                    else if (args[0].equalsIgnoreCase("help")) {
+                        List<String> helpMessages = config.getStringList("messages.help");
+                        for (String message : helpMessages) {
+                            player.sendMessage(message);
+                        }
+                        return true;
+                    }
                 } else if (args[0].equalsIgnoreCase("entrar")) {
                     if (args.length > 1) {
                         GameManager.joinGame(player, args[1]);

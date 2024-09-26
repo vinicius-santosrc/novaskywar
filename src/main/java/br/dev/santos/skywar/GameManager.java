@@ -162,10 +162,14 @@ public class GameManager implements Listener {
         String Credits = "1000";
 
         PlayerData playerData = playersData.get(player);
-        String message = config.getString("messages.buy_new_kit")
+
+        List<String> helpMessages = config.getStringList("messages.buy_new_kit")
                 .replace("{kit}", kit)
                 .replace("{credits}", Credits);
-        ;
+        for (String message : helpMessages) {
+            player.sendMessage(message);
+        }
+        
         player.sendMessage(message);
     }
 
@@ -773,6 +777,12 @@ public class GameManager implements Listener {
         sendMessageToArena(arena, messageFinished);
         String messageLobby = config.getString("messages.lobby_message");
         sendMessageToArena(arena, messageLobby);
+        String Credits = "1000";
+        List<String> messageCredits = config.getStringList("messages.winner_message")
+                .replace("{creditos}", Credits);
+        for (String message : messageCredits) {
+            player.sendMessage(message);
+        }
 
         player.performCommand("warp " + arena + "-winner");
 
