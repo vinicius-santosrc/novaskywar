@@ -41,7 +41,7 @@ public class SaveAreaCommand implements CommandExecutor {
 
         String areaName = args[0];
         Location loc1 = player.getLocation();
-        Location loc2 = player.getLocation().add(250, 200, 300);
+        Location loc2 = player.getLocation().add(50, 50, 50);
 
         JsonArray blocksArray = new JsonArray();
 
