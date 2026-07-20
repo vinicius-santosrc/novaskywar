@@ -19,6 +19,7 @@ import java.util.List;
 
 public final class Skywar extends JavaPlugin implements Listener {
     private static File backupFolder;
+    private MoneyManager moneyManager;
 
     @Override
     public void onEnable() {
@@ -44,7 +45,6 @@ public final class Skywar extends JavaPlugin implements Listener {
     public static void resetWorldByArena(String arena) {
         new ResetWorldCommand(arena, backupFolder);
     }
-
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -72,6 +72,9 @@ public final class Skywar extends JavaPlugin implements Listener {
                         player.sendMessage(config.getString("messages.unknown_command"));
                         return true;
                     }
+                } else if (args[0].equalsIgnoreCase("creditos")) {
+                    int money = moneyManager.getMoney(player);
+                    player.sendMessage(config.getString("messages.money_player").replace("{money}", String.valueOf(money)));
                 } else if (args[0].equalsIgnoreCase("sair")) {
                     GameManager.leaveGame(player);
                     player.setGameMode(GameMode.ADVENTURE);

@@ -1,7 +1,6 @@
 package br.dev.santos.skywar;
 
 import org.bukkit.*;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -17,7 +16,9 @@ import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.ClickType;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.*;
+import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.FireworkMeta;
@@ -27,7 +28,6 @@ import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scoreboard.Scoreboard;
 import org.bukkit.plugin.java.JavaPlugin;
-
 
 import java.io.File;
 import java.util.*;
@@ -113,9 +113,7 @@ public class GameManager implements Listener {
             this.status = status;
         }
 
-
     }
-
 
     public static class Partida {
         private String status; // Started, Finishing, Reseting, Vip, Open
@@ -138,8 +136,12 @@ public class GameManager implements Listener {
         }
     }
 
-
     public static void chooseKit(Player player, String kit) {
+        ItemStack kitIconTest = Kit.getKitIcon(kit);
+        if (kitIconTest == null) {
+            player.sendMessage("§cEsse kit não existe ou está indisponível.");
+            return;
+        }
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
 
@@ -147,9 +149,27 @@ public class GameManager implements Listener {
         playerData.setKit(kit);
         playersData.put(player, playerData);
 
+        if (kit.equalsIgnoreCase("default")) {
+            ItemStack chest = new ItemStack(Material.CHEST);
+            ItemMeta metaChest = chest.getItemMeta();
+            if (metaChest != null) {
+                metaChest.setDisplayName("§6Seleção de KIT");
+                chest.setItemMeta(metaChest);
+            }
+            player.getInventory().setItem(3, chest);
+            return;
+        }
+
         String message = config.getString("messages.kit_selected")
                 .replace("{kit}", kit);
         player.sendMessage(message);
+        ItemStack kitIcon = kitIconTest.clone();
+        ItemMeta meta = kitIcon.getItemMeta();
+        if (meta != null) {
+            meta.setDisplayName("§6Seleção de KIT");
+            kitIcon.setItemMeta(meta);
+        }
+        player.getInventory().setItem(3, kitIcon);
     }
 
     public static void buyNewKit(Player player, String kit) {
@@ -252,7 +272,7 @@ public class GameManager implements Listener {
 
             String joinMessage = config.getString("messages.player_joined_arena")
                     .replace("{player}", player.getDisplayName())
-                    .replace("{X}", String.valueOf(getPlayersInArena(playerData.arena).size()))
+                    .replace("{X}", String.valueOf(PlayersArena))
                     .replace("{Y}", MaxPlayers.toString());
             sendMessageToArena(arena, joinMessage);
 
@@ -276,7 +296,6 @@ public class GameManager implements Listener {
             player.sendMessage(message);
         }
     }
-
 
     public static void leaveGame(Player player) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
@@ -318,7 +337,7 @@ public class GameManager implements Listener {
 
                 String joinMessage = config.getString("messages.player_leave_arena")
                         .replace("{player}", player.getDisplayName())
-                        .replace("{X}", String.valueOf(getPlayersInArena(playerData.arena).size()))
+                        .replace("{X}", String.valueOf(PlayersArena - 1))
                         .replace("{Y}", MaxPlayers.toString());
                 sendMessageToArena(playerData.arena, joinMessage);
                 playerData.setDead(false);
@@ -378,7 +397,6 @@ public class GameManager implements Listener {
         // Cria um array final para armazenar o ID da tarefa
         final int[] taskId = new int[1];
 
-
         taskId[0] = Bukkit.getScheduler().runTaskTimer(plugin, new Runnable() {
             int count = i;
 
@@ -387,7 +405,8 @@ public class GameManager implements Listener {
                 if (count > 0) {
                     partida.setTimeToStart(count);
                     if (count <= 5 || count == 10 || count == 30 || count == 60 || count == 120 || count == 180) {
-                        String joinMessage = config.getString("messages.seconds_to_start").replace("{seconds}", String.valueOf(count));
+                        String joinMessage = config.getString("messages.seconds_to_start").replace("{seconds}",
+                                String.valueOf(count));
                         sendMessageToArena(playerData.arena, joinMessage);
                     }
                     for (int i = 0; i < getPlayersInArena(arena).size(); i++) {
@@ -396,7 +415,8 @@ public class GameManager implements Listener {
                         if (count == 1) {
                             p.playSound(p.getLocation(), Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
                         } else {
-                            if (count <= 10 || count == 30 || count == 30 || count == 60 || count == 120 || count == 180) {
+                            if (count <= 10 || count == 30 || count == 30 || count == 60 || count == 120
+                                    || count == 180) {
                                 p.playSound(p.getLocation(), Sound.valueOf("CLICK"), 1.0f, 1.0f);
                             }
                         }
@@ -443,7 +463,7 @@ public class GameManager implements Listener {
             playerData.setStatus("Playing");
         }
 
-        final int[] timeofMatch = {5};
+        final int[] timeofMatch = { 5 };
 
         for (int i = 0; i < playersInArena.size(); i++) {
             Player p = playersInArena.get(i);
@@ -498,7 +518,6 @@ public class GameManager implements Listener {
             }
         }.runTaskTimer(plugin, 20L, 20L);
 
-
     }
 
     ;
@@ -516,13 +535,65 @@ public class GameManager implements Listener {
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
-        Block block = event.getClickedBlock();
-        if (player.getItemInHand().getType().equals(Material.CHEST)) {
-            Bukkit.dispatchCommand(player, "chestcommands open swkits " + player.getDisplayName());
-        } else if (player.getItemInHand().getType().equals(Material.EMERALD)) {
-            Bukkit.dispatchCommand(player, "chestcommands open swloja " + player.getDisplayName());
+        PlayerData playerData = playersData.get(player);
+
+        if (playerData == null || !"WaitingLobby".equals(playerData.getStatus())) {
+            return;
         }
 
+        ItemStack item = player.getItemInHand();
+        if (item == null || item.getType() == Material.AIR) return;
+
+        ItemMeta meta = item.getItemMeta();
+        if (meta == null || !meta.hasDisplayName()) return;
+
+        event.setCancelled(true);
+
+        if (meta.getDisplayName().equals("§6Seleção de KIT")) {
+            Bukkit.dispatchCommand(player, "chestcommands open swkits " + player.getName());
+        } else if (item.getType() == Material.EMERALD) {
+            Bukkit.dispatchCommand(player, "chestcommands open swloja " + player.getName());
+        }
+    }
+
+    @EventHandler
+    public void onInventoryClick(InventoryClickEvent event) {
+        if (!(event.getWhoClicked() instanceof Player)) return;
+
+        Player player = (Player) event.getWhoClicked();
+        PlayerData playerData = playersData.get(player);
+
+        if (playerData != null && "WaitingLobby".equals(playerData.getStatus())) {
+            event.setCancelled(true);
+
+            // Prevent armor equip via shift-click or number keys
+            if (event.getCurrentItem() != null && event.getCurrentItem().getType().name().contains("CHESTPLATE")) {
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onInventoryDrag(InventoryDragEvent event) {
+        if (!(event.getWhoClicked() instanceof Player))
+            return;
+
+        Player player = (Player) event.getWhoClicked();
+        PlayerData playerData = playersData.get(player);
+
+        if (playerData != null && "WaitingLobby".equals(playerData.getStatus())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onItemDrop(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+        PlayerData playerData = playersData.get(player);
+
+        if (playerData != null && "WaitingLobby".equals(playerData.getStatus())) {
+            event.setCancelled(true);
+        }
     }
 
     @EventHandler
@@ -556,7 +627,8 @@ public class GameManager implements Listener {
             Player player = (Player) event.getEntity();
             PlayerData playerData = playersData.get(player);
 
-            if (playerData.getKit().equals("Enderman") || playerData.getStatus().equals("WaitingLobby") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (playerData.getKit().equals("Enderman") || playerData.getStatus().equals("WaitingLobby")
+                    && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
             }
         }
@@ -620,10 +692,10 @@ public class GameManager implements Listener {
                 Player killer = (Player) entityDamageEvent.getDamager();
                 PlayerData killerData = playersData.get(killer);
 
-                if(killerData.getKit().equals("Vampiro")) {
+                if (killerData.getKit().equals("Vampiro")) {
                     killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 1));
                 }
-                if(killerData.getKit().equals("Assassino")) {
+                if (killerData.getKit().equals("Assassino")) {
                     double health = killer.getHealth();
                     killer.setHealth(health + 5);
                 }
@@ -641,17 +713,18 @@ public class GameManager implements Listener {
         }
         // Se o jogador tiver o kit "Vida-extra"
         if (playerData != null) {
-            if (playerData.getKit() != null && playerData.getKit().equalsIgnoreCase("Vida-extra") && !playerData.isDead()) {
+            if (playerData.getKit() != null && playerData.getKit().equalsIgnoreCase("Vida-extra")
+                    && !playerData.isDead()) {
                 // Verifica se o jogador já usou a vida extra
                 if (!playerData.hasUsedExtraLife()) {
                     // Salva o inventário e a armadura do jogador
                     ItemStack[] savedInventory = player.getInventory().getContents();
                     ItemStack[] savedArmor = player.getInventory().getArmorContents();
 
-// Limpa os drops de itens
+                    // Limpa os drops de itens
                     event.getDrops().clear();
 
-// Teleporta para a warp configurada
+                    // Teleporta para a warp configurada
                     teleportPlayerToWarp(player, playerData.getArena() + "-" + playerData.getIsland());
 
                     // Adiciona um pequeno delay antes de restaurar o inventário e a armadura
@@ -661,7 +734,8 @@ public class GameManager implements Listener {
                             // Restaura o inventário e a armadura do jogador
                             player.getInventory().setContents(savedInventory);
                             player.getInventory().setArmorContents(savedArmor);
-                            player.updateInventory(); // Atualiza o inventário do jogador para garantir que seja refletido no cliente
+                            player.updateInventory(); // Atualiza o inventário do jogador para garantir que seja
+                                                      // refletido no cliente
                         }
                     }.runTaskLater(Skywar.getPlugin(Skywar.class), 5L); // Pequeno delay de 5 ticks (0.25 segundos)
 
@@ -728,7 +802,6 @@ public class GameManager implements Listener {
 
     }
 
-
     private static void teleportPlayerToWarp(Player player, String warpName) {
         player.performCommand("warp " + warpName);
     }
@@ -789,7 +862,8 @@ public class GameManager implements Listener {
         String message = config.getString("messages.winning_message");
         player.sendMessage(message);
 
-        String messageFinished = config.getString("messages.game_finished").replace("{player}", player.getDisplayName());
+        String messageFinished = config.getString("messages.game_finished").replace("{player}",
+                player.getDisplayName());
         sendMessageToArena(arena, messageFinished);
         String messageLobby = config.getString("messages.lobby_message");
         sendMessageToArena(arena, messageLobby);
@@ -802,7 +876,6 @@ public class GameManager implements Listener {
         player.performCommand("warp " + arena + "-winner");
 
         player.getLocation();
-
 
         final int[] taskId = new int[1];
 
@@ -861,7 +934,6 @@ public class GameManager implements Listener {
                         teleportPlayerToWarp(spec, "skywar");
                     }
 
-
                     try {
                         Skywar.resetWorldByArena(arena);
                     } catch (Exception e) {
@@ -917,7 +989,6 @@ public class GameManager implements Listener {
                 }.runTaskTimer(plugin, 0L, 1L); //
 
             }
-
 
         }, 0L, 20L).getTaskId();
     }
