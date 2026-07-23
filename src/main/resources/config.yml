@@ -50,8 +50,87 @@ messages:
 
   help:
     - "§6----- §3[SkyWar] §6-----"
-    - "§6/skywar create <mapa> - §fCriação de mapas"
+    - "§6/skywar create <mapa> <nomemundo> <maxplayers> <minplayers> - §fCriação de mapas"
     - "§6/skywar remove <mapa> - §fRemoção de mapas"
-    - "§6/start - §fForça o início da partida"
+    - "§6/skywar start - §fForça o início da partida atual"
     - "§6/skywar help - §fAjuda com o plugin"
     - "------------------"
+arenas:
+  PixelLands:
+    enabled: true
+    worldName: "PixelLands"
+    max-players: 12
+    min-players: 4
+    pvp-off-time: 5
+
+    warps:
+      waiting: "WaitingSW"
+      winner: "PixelLands-winner"
+
+    islands:
+      1: "PixelLands-1"
+      2: "PixelLands-2"
+      3: "PixelLands-3"
+      4: "PixelLands-4"
+      5: "PixelLands-5"
+      6: "PixelLands-6"
+      7: "PixelLands-7"
+      8: "PixelLands-8"
+      9: "PixelLands-9"
+      10: "PixelLands-10"
+      11: "PixelLands-11"
+      12: "PixelLands-12"
+
+  SkyLands:
+    enabled: true
+    worldName: "SkyLands"
+    max-players: 16
+    min-players: 8
+    pvp-off-time: 5
+
+    warps:
+      waiting: "WaitingSW"
+      winner: "SkyLands-winner"
+
+    islands:
+      1: "SkyLands-1"
+      2: "SkyLands-2"
+      3: "SkyLands-3"
+      4: "SkyLands-4"
+      5: "SkyLands-5"
+      6: "SkyLands-6"
+      7: "SkyLands-7"
+      8: "SkyLands-8"
+      9: "SkyLands-9"
+      10: "SkyLands-10"
+      11: "SkyLands-11"
+      12: "SkyLands-12"
+      13: "SkyLands-13"
+      14: "SkyLands-14"
+      15: "SkyLands-15"
+      16: "SkyLands-16"
+
+  DesertLands:
+    enabled: true
+    worldName: "DesertLands"
+    max-players: 12
+    min-players: 4
+    pvp-off-time: 5
+
+    warps:
+      waiting: "WaitingSW"
+      winner: "DesertLands-winner"
+
+    islands:
+      1: "DesertLands-1"
+      2: "DesertLands-2"
+      3: "DesertLands-3"
+      4: "DesertLands-4"
+      5: "DesertLands-5"
+      6: "DesertLands-6"
+      7: "DesertLands-7"
+      8: "DesertLands-8"
+      9: "DesertLands-9"
+      10: "DesertLands-10"
+      11: "DesertLands-11"
+      12: "DesertLands-12"
