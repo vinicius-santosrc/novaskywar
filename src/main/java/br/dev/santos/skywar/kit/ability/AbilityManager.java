@@ -32,7 +32,7 @@ public class AbilityManager {
         register(new AssassinoAbility());
         register(new HomemAranhaAbility());
         register(new HomemBombaAbility());
-        register(new EndermanAbility());
+        register(new EndermanAbility(playerManager));
         register(new SopaAbility());
         register(new ZeusAbility());
     }

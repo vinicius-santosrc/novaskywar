@@ -1,16 +1,10 @@
 package br.dev.santos.skywar.listeners;
 
-import java.util.ArrayList;
-import java.util.List;
-
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerQuitEvent;
 
-import br.dev.santos.skywar.Skywar;
-import br.dev.santos.skywar.arena.Arena;
 import br.dev.santos.skywar.arena.ArenaMessenger;
 import br.dev.santos.skywar.arena.GameManager;
 import br.dev.santos.skywar.player.PlayerData;
@@ -41,10 +35,8 @@ public final class PlayerConnectionListener implements Listener {
     public void onPlayerQuit(PlayerQuitEvent event) {
         Player player = event.getPlayer();
         PlayerData playerData = this.playerManager.get(player);
-
-        this.playerGameService.preparePlayerForLobby(playerData, false);
-
-        if (playerData != null) {
+        
+        if (playerData.getArena() != null) {
             this.gameManager.leaveGame(player);
         }
     }

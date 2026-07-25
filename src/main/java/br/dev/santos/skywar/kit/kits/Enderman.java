@@ -8,8 +8,8 @@ import br.dev.santos.skywar.kit.ability.abilities.EndermanAbility;
 
 public class Enderman extends Kit {
 
-    public Enderman() {
-        super("Enderman", true, new ItemStack(Material.ENDER_PEARL), true, new EndermanAbility());
+    public Enderman(EndermanAbility endermanAbility) {
+        super("Enderman", true, new ItemStack(Material.ENDER_PEARL), true, endermanAbility);
         addItem(new ItemStack(Material.ENDER_PEARL));
     }
 }

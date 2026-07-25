@@ -38,24 +38,33 @@ public class EliminationHandler {
                 Player killer = (Player) entityDamageEvent.getDamager();
                 PlayerData killerData = this.playerManager.get(killer);
 
+                killerData.addCredits("eliminar {X} jogador", 8);
+
                 this.deathMessage = config.getString("messages.player_killed_oponent")
                         .replace("{player}", playerDeadEntity.getDisplayName())
-                        .replace("{killer}", killer.getDisplayName());
+                        .replace("{killer}", killer.getDisplayName())
+                        .replace("{X}", String.valueOf(arena.alivePlayers.size()))
+                        .replace("{Y}", String.valueOf(arena.maxPlayers));
 
-                if (killerData.getKit() instanceof Vampiro) {
+                if (killerData.getKit() instanceof Assassino) {
                     killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 1));
                 }
-                if (killerData.getKit() instanceof Assassino) {
+                if (killerData.getKit() instanceof Vampiro) {
                     double health = killer.getHealth();
                     killer.setHealth(health + 5);
                 }
             }
         } else if (lastDamageCause.getCause() == EntityDamageEvent.DamageCause.VOID) {
-             this.deathMessage = config.getString("messages.messageDeath")
-                    .replace("{player}", playerDeadEntity.getDisplayName());
-        } else {
+            this.deathMessage = config.getString("messages.death")
+                    .replace("{player}", playerDeadEntity.getDisplayName())
+                    .replace("{X}", String.valueOf(arena.alivePlayers.size()))
+                    .replace("{Y}", String.valueOf(arena.maxPlayers));
+        } 
+        else {
             this.deathMessage = config.getString("messages.messageDeath")
-                    .replace("{player}", playerDeadEntity.getDisplayName());
+                    .replace("{player}", playerDeadEntity.getDisplayName())
+                    .replace("{X}", String.valueOf(arena.alivePlayers.size()))
+                    .replace("{Y}", String.valueOf(arena.maxPlayers));
         }
 
         this.arenaMessenger.sendMessageToArena(arena, deathMessage);

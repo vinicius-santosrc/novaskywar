@@ -5,11 +5,13 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.bukkit.configuration.file.FileConfiguration;
+
 public class ArenaManager {
     private final Map<String, Arena> arenas = new HashMap<>();
 
-    public void createArena(String name, String nameOfWorld, int maxPlayers, int minPlayers) {
-        Arena arena = new Arena(name, nameOfWorld, maxPlayers, minPlayers);
+    public void createArena(String name, String nameOfWorld, int maxPlayers, int minPlayers, int pvpOffTime, FileConfiguration arenaConfig) {
+        Arena arena = new Arena(name, nameOfWorld, maxPlayers, minPlayers, pvpOffTime, arenaConfig);
 
         arenas.put(arena.getName(), arena);
     }

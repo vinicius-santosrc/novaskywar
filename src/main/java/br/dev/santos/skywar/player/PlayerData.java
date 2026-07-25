@@ -1,5 +1,8 @@
 package br.dev.santos.skywar.player;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 import org.bukkit.entity.Player;
@@ -16,6 +19,8 @@ public class PlayerData {
     private PlayerState status;
     private Player playerEntity;
     private boolean isDead = false;
+    private int creditsEarn = 0;
+    private Map<String, Integer> creditsEarnList = new HashMap<>();
 
     private Boolean hasUsedExtraLife = false;
 
@@ -27,8 +32,22 @@ public class PlayerData {
         this.playerEntity = playerEntity;
     }
 
+    public Map<String, Integer> getCreditsEarnList() {
+        return this.creditsEarnList;
+    }
+
+    public void addCredits(String name, Integer quantity) {
+        this.creditsEarnList.put(name, quantity);
+        this.creditsEarn += quantity;
+        this.playerEntity.sendMessage("§6+" + quantity);
+    }
+
     public UUID getUniqueId() {
-        return id;
+        return this.id;
+    }
+
+    public int getCreditsEarn() {
+        return this.creditsEarn;
     }
 
     public void setDead(boolean isDead) {
@@ -40,15 +59,15 @@ public class PlayerData {
     }
 
     public Player getPlayerEntity() {
-        return playerEntity;
+        return this.playerEntity;
     }
 
     public Kit getKit() {
-        return kit;
+        return this.kit;
     }
 
     public Boolean getHasUsedExtraLife() {
-        return hasUsedExtraLife;
+        return this.hasUsedExtraLife;
     }
 
     public void setHasUsedExtraLife(Boolean hasUsedExtraLife) {
@@ -56,7 +75,7 @@ public class PlayerData {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public void setKit(Kit kit) {
@@ -68,11 +87,11 @@ public class PlayerData {
     }
 
     public int getIsland() {
-        return island;
+        return this.island;
     }
 
     public Arena getArena() {
-        return arena;
+        return this.arena;
     }
 
     public void setArena(Arena arena) {
@@ -80,7 +99,7 @@ public class PlayerData {
     }
 
     public PlayerState getStatus() {
-        return status;
+        return this.status;
     }
 
     public void setStatus(PlayerState status) {

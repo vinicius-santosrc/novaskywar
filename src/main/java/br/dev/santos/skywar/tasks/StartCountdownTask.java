@@ -75,4 +75,10 @@ public final class StartCountdownTask extends BukkitRunnable {
 
         timeToStart--;
     }
+
+    @Override
+    public synchronized void cancel() throws IllegalStateException {
+        arena.setTimeToStart(90);
+        super.cancel();
+    }
 }

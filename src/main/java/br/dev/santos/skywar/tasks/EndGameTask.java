@@ -41,6 +41,7 @@ public class EndGameTask extends BukkitRunnable {
 
     @Override
     public void run() {
+        this.arena.setStatus(StatusArena.FINISHING);
         startFireworks();
 
         if (secondsRemaining > 0) {

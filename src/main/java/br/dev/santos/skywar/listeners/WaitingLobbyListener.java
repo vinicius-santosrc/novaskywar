@@ -15,7 +15,9 @@ import org.bukkit.inventory.meta.ItemMeta;
 
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
+import br.dev.santos.skywar.utils.TeleportUtils;
 import br.dev.santos.skywar.warp.WarpManager;
+import br.dev.santos.skywar.warp.WarpManager.Coord;
 import br.dev.santos.skywar.player.PlayerData.PlayerState;
 
 public final class WaitingLobbyListener implements Listener {
@@ -37,7 +39,8 @@ public final class WaitingLobbyListener implements Listener {
         PlayerData playerData = this.playerManager.get(player);
 
         if (player.getLocation().getY() < 0 && playerData.getStatus() == PlayerState.WAITING) {
-            this.warpManager.teleportToWaitingLobby(player);
+            Coord waitingLobby = TeleportUtils.getWaitingLobby(playerData.getArena());
+            this.warpManager.teleport(playerData.getPlayerEntity(), waitingLobby);
         }
     }
 
@@ -46,7 +49,7 @@ public final class WaitingLobbyListener implements Listener {
         Player player = event.getPlayer();
         PlayerData playerData = this.playerManager.get(player);
 
-        if (playerData == null || !"WaitingLobby".equals(playerData.getStatus())) {
+        if (!playerData.getStatus().equals(PlayerState.WAITING)) {
             return;
         }
 
@@ -58,9 +61,11 @@ public final class WaitingLobbyListener implements Listener {
 
         event.setCancelled(true);
 
+        // Atribui comando para o báu
+        // Atribui esmeralda para a loja
         if (meta.getDisplayName().equals("§6Seleção de KIT")) {
             Bukkit.dispatchCommand(player, "chestcommands open swkits " + player.getDisplayName());
-        } else if (item.getType() == Material.EMERALD) {
+        } else if (meta.getDisplayName().equals("§2Loja")) {
             Bukkit.dispatchCommand(player, "chestcommands open swloja " + player.getDisplayName());
         }
     }
@@ -72,10 +77,10 @@ public final class WaitingLobbyListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         PlayerData playerData = this.playerManager.get(player);
 
-        if (playerData != null && "WaitingLobby".equals(playerData.getStatus())) {
+        if (playerData.getStatus().equals(PlayerState.WAITING)) {
             event.setCancelled(true);
 
-            // Prevent armor equip via shift-click or number keys
+            // Não deixa equipar armaduras
             if (event.getCurrentItem() != null && event.getCurrentItem().getType().name().contains("CHESTPLATE")) {
                 event.setCancelled(true);
             }
@@ -90,8 +95,12 @@ public final class WaitingLobbyListener implements Listener {
         Player player = (Player) event.getWhoClicked();
         PlayerData playerData = this.playerManager.get(player);
 
-        if (playerData != null && "WaitingLobby".equals(playerData.getStatus())) {
-            event.setCancelled(true);
+        if (playerData.getStatus().equals(PlayerState.WAITING)) {
+
+            // Bloqueia mover items pelo inventário
+            if (playerData.getStatus().equals(PlayerState.WAITING)) {
+                event.setCancelled(true);
+            }
         }
     }
 
@@ -100,8 +109,11 @@ public final class WaitingLobbyListener implements Listener {
         Player player = event.getPlayer();
         PlayerData playerData = this.playerManager.get(player);
 
-        if (playerData != null && "WaitingLobby".equals(playerData.getStatus())) {
-            event.setCancelled(true);
+        if (playerData.getStatus().equals(PlayerState.WAITING)) {
+            // Bloqueia drop items pelo inventário
+            if (playerData.getStatus().equals(PlayerState.WAITING)) {
+                event.setCancelled(true);
+            }
         }
     }
 }

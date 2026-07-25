@@ -13,15 +13,19 @@ package br.dev.santos.skywar.arena;
 import java.util.ArrayList;
 import java.util.UUID;
 
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
+
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
+import br.dev.santos.skywar.tasks.StartCountdownTask;
 
 public class Arena {
     private String name;
     private String nameOfTheWorld;
     private UUID id = UUID.randomUUID();
     private StatusArena status = StatusArena.OPEN;
-    public boolean pvpOff;
+    public boolean pvpOn;
     public int pvpOffTime = 5;
     public int maxPlayers = 12;
     public int minPlayers = 2;
@@ -30,15 +34,33 @@ public class Arena {
     private int timeToStart;
     public int timeOfTheMatch;
     private ArrayList<PlayerData> players = new ArrayList<PlayerData>();
-    
+
+    private FileConfiguration arenaConfig;
+
+    private StartCountdownTask countdownTask;
+
     PlayerManager playerManager;
 
-    public Arena(String name, String nameOfTheWorld, int maxPlayers, int minPlayers) {
+    public Arena(String name, String nameOfTheWorld, int maxPlayers, int minPlayers, int pvpOffTime,
+            FileConfiguration config) {
         this.name = name;
         this.nameOfTheWorld = nameOfTheWorld;
         this.maxPlayers = maxPlayers;
         this.minPlayers = minPlayers;
+        this.pvpOffTime = pvpOffTime;
+        this.arenaConfig = config;
+    }
+    
+    public ConfigurationSection getArenaConfig() {
+        return this.arenaConfig.getConfigurationSection("arenas." + this.nameOfTheWorld);
+    }
 
+    public StartCountdownTask getCountdownTask() {
+        return countdownTask;
+    }
+
+    public void setCountdownTask(StartCountdownTask countdownTask) {
+        this.countdownTask = countdownTask;
     }
 
     public int getTimeToStart() {
@@ -52,7 +74,7 @@ public class Arena {
     public String getNameOfTheWorld() {
         return this.nameOfTheWorld;
     }
-    
+
     public void setNameOfTheWorld(String nameOfTheWorld) {
         this.nameOfTheWorld = nameOfTheWorld;
     }
@@ -97,7 +119,7 @@ public class Arena {
     }
 
     public boolean canJoin(PlayerData player) {
-        if(player.getPlayerEntity().hasPermission("vip_skywar_join")) {
+        if (player.getPlayerEntity().hasPermission("vip_skywar_join")) {
             return this.status == StatusArena.VIP;
         }
         return this.status == StatusArena.OPEN;

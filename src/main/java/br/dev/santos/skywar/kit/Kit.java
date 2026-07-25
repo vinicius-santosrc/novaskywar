@@ -37,27 +37,27 @@ public abstract class Kit {
     }
 
     public String getName() {
-        return name;
+        return this.name;
     }
 
     public Boolean getEnabled() {
-        return enabled;
+        return this.enabled;
     }
 
     public ItemStack getIcon() {
-        return icon.clone();
+        return this.icon.clone();
     }
 
     public Boolean getExclusiveVip() {
-        return exclusiveVip;
+        return this.exclusiveVip;
     }
 
     public Ability getAbility() {
-        return ability;
+        return this.ability;
     }
 
     public ArrayList<ItemStack> getItems() {
-        return items;
+        return this.items;
     }
 
     public void addItem(ItemStack item) {

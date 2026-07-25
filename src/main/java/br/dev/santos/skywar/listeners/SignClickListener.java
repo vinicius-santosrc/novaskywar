@@ -1,6 +1,5 @@
 package br.dev.santos.skywar.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
 import org.bukkit.event.EventHandler;
@@ -11,7 +10,6 @@ import org.bukkit.event.player.PlayerInteractEvent;
 
 import br.dev.santos.skywar.arena.Arena;
 import br.dev.santos.skywar.arena.ArenaManager;
-
 import org.bukkit.entity.Player;
 
 public final class SignClickListener implements Listener {
@@ -78,12 +76,6 @@ public final class SignClickListener implements Listener {
         Sign sign = (Sign) block.getState();
         updateSign(sign, arenaManager);
 
-        String statusLine = sign.getLine(0);
-
-        if (!"§a§l[Aberta]".equalsIgnoreCase(statusLine) && !"§6§l[VIP]".equalsIgnoreCase(statusLine)) {
-            return;
-        }
-
         String mapName = sign.getLine(3);
         String numberRoom = extractRoomNumber(sign.getLine(1));
 
@@ -101,7 +93,19 @@ public final class SignClickListener implements Listener {
 
         Player player = event.getPlayer();
 
-        player.performCommand("skywar entrar " + mapName + "-" + numberRoom);
+        switch (arena.getStatus()) {
+            case FINISHING:
+            case RESETING:
+            case STARTED:
+                event.getPlayer().sendMessage("§cEssa arena já está em andamento.");
+                break;
+            case OPEN:
+                player.performCommand("skywar entrar " + mapName + " " + numberRoom);
+                break;
+            case VIP:
+                player.performCommand("skywar entrar " + mapName + " " + numberRoom);
+                break;
+        }
     }
 
     public static void updateSign(Sign sign, ArenaManager arenaManager) {
@@ -143,8 +147,7 @@ public final class SignClickListener implements Listener {
                 2,
                 arena.getPlayers().size()
                         + "/"
-                        + arena.maxPlayers
-        );
+                        + arena.maxPlayers);
         event.setLine(3, mapName);
     }
 
@@ -160,8 +163,7 @@ public final class SignClickListener implements Listener {
                 2,
                 arena.getPlayers().size()
                         + "/"
-                        + arena.maxPlayers
-        );
+                        + arena.maxPlayers);
         sign.setLine(3, mapName);
     }
 

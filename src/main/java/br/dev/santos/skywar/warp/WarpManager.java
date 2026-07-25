@@ -1,28 +1,45 @@
 package br.dev.santos.skywar.warp;
 
+import org.bukkit.Bukkit;
+
+import org.bukkit.Location;
+import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import br.dev.santos.skywar.arena.Arena;
-
 public final class WarpManager {
-
-    public void teleport(Player player, String warpName) {
-        player.performCommand("warp " + warpName);
+    FileConfiguration config;
+    public WarpManager(FileConfiguration config) {
+        this.config = config;
     }
 
-    public void teleportToIsland(Player player, Arena arena, int island) {
-        teleport(player, arena.getName() + "-" + island);
+    public void teleport(Player player, Coord coord) {
+        Location location = new Location(Bukkit.getWorld(coord.worldName), coord.x, coord.y, coord.z);
+        player.teleport(location);
     }
 
-    public void teleportToWinnerArea(Player player, Arena arena) {
-        teleport(player, arena.getName() + "-winner");
+    public void teleportToLoobySw(Player player) {
+        ConfigurationSection configSec = this.config.getConfigurationSection("lobby");
+        String lobbyWorld = configSec.getString("worldName");
+        int lobbyX = configSec.getInt("x");
+        int lobbyY = configSec.getInt("y");
+        int lobbyZ = configSec.getInt("z");
+
+        Location location = new Location(Bukkit.getWorld(lobbyWorld), lobbyX, lobbyY, lobbyZ);
+        player.teleport(location);
     }
 
-    public void teleportToLobby(Player player) {
-        teleport(player, "skywar");
-    }
+    public static class Coord {
+        public String worldName = "";
+        public int x = 0;
+        public int y = 0;
+        public int z = 0;
 
-    public void teleportToWaitingLobby(Player player) {
-        teleport(player, "WaitingSW");
+        public Coord(String worldName, int x, int y, int z) {
+            this.worldName = worldName;
+            this.x = x;
+            this.y = y;
+            this.z = z;
+        }
     }
 }

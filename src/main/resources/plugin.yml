@@ -15,3 +15,6 @@ commands:
   resetworld:
     description: Reseta o mundo de SkyWars.
     usage: /resetworld
+  start:
+    description: Inicia a partida atual de SkyWar
+    usage: /start

@@ -14,11 +14,13 @@ import br.dev.santos.skywar.kit.ability.Ability;
 import br.dev.santos.skywar.kit.kits.Enderman;
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
+import br.dev.santos.skywar.player.PlayerData.PlayerState;
 
 public class EndermanAbility extends Ability {
     PlayerManager playerManager;
-    public EndermanAbility() {
+    public EndermanAbility(PlayerManager playerManager) {
         super("Enderman");
+        this.playerManager = playerManager;
     }
 
     @EventHandler
@@ -62,7 +64,7 @@ public class EndermanAbility extends Ability {
             Player player = (Player) event.getEntity();
             PlayerData playerData = this.playerManager.get(player);
 
-            if (playerData.getKit() instanceof Enderman && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (playerData.getKit() instanceof Enderman && event.getCause() == EntityDamageEvent.DamageCause.FALL && playerData.getStatus().equals(PlayerState.PLAYING)) {
                 event.setCancelled(true);
             }
         }

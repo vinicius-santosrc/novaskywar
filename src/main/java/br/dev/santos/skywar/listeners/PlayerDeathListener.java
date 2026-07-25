@@ -1,11 +1,10 @@
 package br.dev.santos.skywar.listeners;
 
-import java.util.ArrayList;
-
 import org.bukkit.ChatColor;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.PlayerDeathEvent;
 
@@ -18,8 +17,10 @@ import br.dev.santos.skywar.kit.kits.VidaExtra;
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerGameService;
 import br.dev.santos.skywar.player.PlayerManager;
+import br.dev.santos.skywar.utils.TeleportUtils;
 import br.dev.santos.skywar.player.PlayerData.PlayerState;
 import br.dev.santos.skywar.warp.WarpManager;
+import br.dev.santos.skywar.warp.WarpManager.Coord;
 
 public final class PlayerDeathListener implements Listener {
 
@@ -41,7 +42,7 @@ public final class PlayerDeathListener implements Listener {
         this.arenaMessenger = arenaMessenger;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.LOWEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
@@ -53,7 +54,11 @@ public final class PlayerDeathListener implements Listener {
         event.setDeathMessage(null);
         player.spigot().respawn();
 
-        // Enviando mensagem de morte
+        if (playerData != null && playerData.getKit() instanceof VidaExtra && !playerData.getHasUsedExtraLife()) {
+            return;
+        }
+
+        // Enviando mensagem de morte (acesse o inventário para teleporte...)
         String message = config.getString("messages.deathmessage");
         player.sendMessage(message);
 
@@ -61,16 +66,6 @@ public final class PlayerDeathListener implements Listener {
         player.setPlayerListName(ChatColor.RED + player.getName());
         player.setCustomName(ChatColor.RED + player.getName());
         player.setCustomNameVisible(true);
-
-        playerData.setDead(true);
-
-        String deathMessage = "";
-
-        if (playerData != null && playerData.getKit() instanceof VidaExtra && !playerData.getHasUsedExtraLife()) {
-            return;
-        }
-
-        this.eliminationHandler.handle(playerData.getArena(), playerData);
 
         if (playerData != null) {
             playerData.setDead(true);
@@ -84,18 +79,11 @@ public final class PlayerDeathListener implements Listener {
             arena.alivePlayers.remove(playerData);
             arena.spectators.add(playerData);
 
-            this.warpManager.teleportToWinnerArea(playerData.getPlayerEntity(), arena);
+            Coord winnerPlace = TeleportUtils.getWinnerPlace(arena);
+            this.warpManager.teleport(playerData.getPlayerEntity(), winnerPlace);
             this.playerGameService.prepareForSpectator(playerData);
-
-            if (playerData != null) {
-                ArrayList<PlayerData> playersInArena = playerData.getArena().getPlayers();
-
-                String messageDeath = deathMessage
-                        .replace("{X}", String.valueOf(playersInArena.size()))
-                        .replace("{Y}", "12");
-
-                this.arenaMessenger.sendMessageToArena(playerData.getArena(), messageDeath);
-            }
         }
+
+        this.eliminationHandler.handle(playerData.getArena(), playerData);
     }
 }

@@ -18,8 +18,7 @@ public final class ArenaLoader {
     }
 
     public void loadArenas() {
-        ConfigurationSection section =
-                config.getConfigurationSection("arenas");
+        ConfigurationSection section = config.getConfigurationSection("arenas");
 
         if (section == null) {
             Bukkit.getLogger().severe(
@@ -52,14 +51,10 @@ public final class ArenaLoader {
                 continue;
             }
 
-            String worldName = config.getString(
-                    path + ".worldName"
-            );
+            String worldName = config.getString(path + ".worldName");
 
-            int maxPlayers = config.getInt(
-                    path + ".max-players",
-                    12
-            );
+            int maxPlayers = config.getInt(path + ".max-players", 12);
+            int minPlayers = config.getInt(path + ".min-players", 2);
 
             int pvpOffTime = config.getInt(
                     path + ".pvp-off-time",
@@ -78,10 +73,12 @@ public final class ArenaLoader {
             );
 
             arenaManager.createArena(
-                    arenaName,
-                    worldName,
-                    maxPlayers,
-                    pvpOffTime
+                arenaName,
+                worldName,
+                maxPlayers,
+                minPlayers,
+                pvpOffTime,
+                config
             );
 
             Arena loadedArena =

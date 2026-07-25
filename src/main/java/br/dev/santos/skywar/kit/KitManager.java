@@ -10,15 +10,13 @@
 
 package br.dev.santos.skywar.kit;
 
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
 
-import br.dev.santos.skywar.Skywar;
 import br.dev.santos.skywar.arena.ArenaMessenger;
+import br.dev.santos.skywar.kit.ability.abilities.EndermanAbility;
 import br.dev.santos.skywar.kit.ability.abilities.VidaExtraAbility;
 import br.dev.santos.skywar.kit.kits.Apple;
 import br.dev.santos.skywar.kit.kits.Arqueiro;
@@ -69,19 +67,12 @@ public class KitManager implements Listener {
         if (kitPlayer == null) {
             return;
         }
-        for (Kit kit : kits) { // De acordo com todos kits criados
-            if (kit.getName().equalsIgnoreCase(kitPlayer.getName())) {
-                ArrayList<ItemStack> items = kit.getItems(); // Pega todos items e mapeia adicionando num arraylist
-                for (ItemStack item : items) {
-                    ItemMeta itemMeta = item.getItemMeta();
-                    item.setItemMeta(itemMeta);
-                }
 
-                Inventory inventory = player.getInventory(); // Após isso, pega o inventário do player e adiciona os items
-                for (ItemStack item : items) {
-                    inventory.addItem(item);
-                }
-                break;
+        Inventory inventory = player.getInventory();
+
+        for (ItemStack item : kitPlayer.getItems()) {
+            if (item != null) {
+                inventory.addItem(item.clone());
             }
         }
     }
@@ -98,7 +89,7 @@ public class KitManager implements Listener {
         register(new Assassino());
         register(new Construtor());
         register(new Encantador());
-        register(new Enderman());
+        register(new Enderman(new EndermanAbility(this.playerManager)));
         register(new Esquimo());
         register(new Ferramentas());
         register(new GrandPa());
@@ -126,20 +117,27 @@ public class KitManager implements Listener {
 
     // Método para pegar o kit pelo nome
     public Kit get(String kitName) {
-        Kit kitSelected = null;
+        if (kitName == null) {
+            return null;
+        }
+
         for (Kit kit : kits) {
-            if (kit.getName() == kitName) {
-                kitSelected = kit;
+            if (kit != null
+                    && kit.getName() != null
+                    && kit.getName().equalsIgnoreCase(kitName)) {
+
+                return kit;
             }
         }
-        return kitSelected;
+
+        return null;
     }
     
     // Método para obter o ícone de um kit pelo nome
-    public static ItemStack getKitIcon(Kit kitName) {
+    public ItemStack getKitIcon(Kit kitName) {
         for (Kit kit : kits) {
             if (kit.getName() == kitName.getName()) {
-                return new ItemStack(kit.getIcon());
+                return kit.getIcon();
             }
         }
         return null;

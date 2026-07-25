@@ -3,6 +3,7 @@ package br.dev.santos.skywar.kit.ability.abilities;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -13,7 +14,9 @@ import br.dev.santos.skywar.kit.ability.Ability;
 import br.dev.santos.skywar.kit.kits.VidaExtra;
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
+import br.dev.santos.skywar.utils.TeleportUtils;
 import br.dev.santos.skywar.warp.WarpManager;
+import br.dev.santos.skywar.warp.WarpManager.Coord;
 
 public class VidaExtraAbility extends Ability {
     PlayerManager playerManager;
@@ -27,7 +30,7 @@ public class VidaExtraAbility extends Ability {
         this.arenaMessenger = arenaMessenger;
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPlayerDeath(PlayerDeathEvent event) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
@@ -50,7 +53,9 @@ public class VidaExtraAbility extends Ability {
                     event.getDrops().clear();
 
                     // Teleporta para a warp configurada
-                    this.warpManager.teleportToIsland(player, playerData.getArena(), playerData.getIsland());
+                    Coord islandPlayer = TeleportUtils.getCoordIslandArenaByIndex(playerData.getArena(), playerData.getIsland());
+                    this.warpManager.teleport(player, islandPlayer);
+                    
                     
                     // Adiciona um pequeno delay antes de restaurar o inventário e a armadura
                     new BukkitRunnable() {

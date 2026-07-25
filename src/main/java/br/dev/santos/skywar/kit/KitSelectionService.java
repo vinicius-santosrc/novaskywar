@@ -12,14 +12,16 @@ import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
 
 public class KitSelectionService {
-    PlayerManager playerManager;
+    private final PlayerManager playerManager;
+    private final KitManager kitManager;
 
-    public KitSelectionService(PlayerManager playerManager) {
+    public KitSelectionService(PlayerManager playerManager, KitManager kitManager) {
         this.playerManager = playerManager;
+        this.kitManager = kitManager;
     }
 
     public void chooseKit(Player player, Kit kit) {
-        ItemStack kitIconTest = KitManager.getKitIcon(kit);
+        ItemStack kitIconTest = this.kitManager.getKitIcon(kit);
         if (kitIconTest == null) {
             player.sendMessage("§cEsse kit não existe ou está indisponível.");
             return;
@@ -80,7 +82,7 @@ public class KitSelectionService {
         ItemStack emerald = new ItemStack(Material.EMERALD);
         ItemMeta emeraldMeta = emerald.getItemMeta();
         if (emeraldMeta != null) {
-            emeraldMeta.setDisplayName("§6Loja");
+            emeraldMeta.setDisplayName("§2Loja");
             emerald.setItemMeta(emeraldMeta);
         }
 

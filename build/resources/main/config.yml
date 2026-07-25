@@ -30,14 +30,7 @@ messages:
   game_finished: "§3[SkyWar] §6O jogo acabou! O vencedor foi: {player}"
   lobby_message: "§3[SkyWar] §6Vocês serão teleportados para o lobby em 15 segundos!"
   enderpearl_message: "§2Você será teleportado em 3 segundos..."
-  winner_message:
-    - "§6+20"
-    - " "
-    - "§6Você ganhou §f{creditos} créditos §6nessa partida:"
-    - " "
-    - "   §f+20 §6por participação"
-    - "   §f+100 §6pela vitória"
-    - " "
+  credits_count_final_match: "§6Você ganhou §f{credits} créditos §6nessa partida:"
   messageDeath: "§3[SkyWar] §6{player} morreu! ({X}/{Y})"
   earningpoints: "§6+{points}"
   death: "§3[SkyWar] §6{player} caiu ({X}/{Y})"
@@ -55,6 +48,11 @@ messages:
     - "§6/skywar start - §fForça o início da partida atual"
     - "§6/skywar help - §fAjuda com o plugin"
     - "------------------"
+lobby:
+  worldName: "LobbySW2"
+  x: 4010
+  y: 61
+  z: 1003
 arenas:
   PixelLands:
     enabled: true
@@ -64,7 +62,11 @@ arenas:
     pvp-off-time: 5
 
     warps:
-      waiting: "WaitingSW"
+      waiting: 
+        worldName: "WaitingLobby"
+        x: -745
+        y: 51
+        z: -1238
       winner: "PixelLands-winner"
 
     islands:
@@ -89,7 +91,11 @@ arenas:
     pvp-off-time: 5
 
     warps:
-      waiting: "WaitingSW"
+      waiting: 
+        worldName: "WaitingLobby"
+        x: -745
+        y: 51
+        z: -1238
       winner: "SkyLands-winner"
 
     islands:
@@ -118,19 +124,75 @@ arenas:
     pvp-off-time: 5
 
     warps:
-      waiting: "WaitingSW"
-      winner: "DesertLands-winner"
+      waiting: 
+        worldName: "WaitingLobby"
+        x: -745
+        y: 51
+        z: -1238
+      winner:
+        worldName: "DesertLands"
+        x: 679
+        y: 84
+        z: 1149
 
     islands:
-      1: "DesertLands-1"
-      2: "DesertLands-2"
-      3: "DesertLands-3"
-      4: "DesertLands-4"
-      5: "DesertLands-5"
-      6: "DesertLands-6"
-      7: "DesertLands-7"
-      8: "DesertLands-8"
-      9: "DesertLands-9"
-      10: "DesertLands-10"
-      11: "DesertLands-11"
-      12: "DesertLands-12"
+      1: 
+        worldName: "DesertLands"
+        x: 679
+        y: 76
+        z: 1178
+      2: 
+        worldName: "DesertLands"
+        x: 664
+        y: 76
+        z: 1177
+      3: 
+        worldName: "DesertLands"
+        x: 651
+        y: 76
+        z: 1164
+      4: 
+        worldName: "DesertLands"
+        x: 650
+        y: 76
+        z: 1149
+      5: 
+        worldName: "DesertLands"
+        x: 651
+        y: 76
+        z: 1134
+      6: 
+        worldName: "DesertLands"
+        x: 664
+        y: 76
+        z: 1121
+      7: 
+        worldName: "DesertLands"
+        x: 679
+        y: 76
+        z: 1120
+      8: 
+        worldName: "DesertLands"
+        x: 694
+        y: 76
+        z: 1121
+      9: 
+        worldName: "DesertLands"
+        x: 707
+        y: 76
+        z: 1134
+      10: 
+        worldName: "DesertLands"
+        x: 708
+        y: 76
+        z: 1149
+      11: 
+        worldName: "DesertLands"
+        x: 707
+        y: 76
+        z: 1164
+      12: 
+        worldName: "DesertLands"
+        x: 694
+        y: 76
+        z: 1177

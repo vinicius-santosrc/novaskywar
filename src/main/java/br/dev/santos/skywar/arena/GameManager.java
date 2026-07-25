@@ -25,179 +25,231 @@ import br.dev.santos.skywar.tasks.FireworksTask;
 import br.dev.santos.skywar.tasks.MatchMonitorTask;
 import br.dev.santos.skywar.tasks.PvPEnableTask;
 import br.dev.santos.skywar.tasks.StartCountdownTask;
+import br.dev.santos.skywar.warp.WarpManager.Coord;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
-
 public class GameManager {
 
-    private final Skywar plugin;
+        private final Skywar plugin;
 
-    private final PlayerManager playerManager;
-    private ArenaMessenger arenaMessenger;
-    private ScoreBoardManager scoreBoardManager;
-    private ResetWorldCommand resetWorldCommand;
-    private FireworksTask fireWorksTask;
-    private PlayerGameService playerGameService;
+        private final PlayerManager playerManager;
+        private ArenaMessenger arenaMessenger;
+        private ScoreBoardManager scoreBoardManager;
+        private ResetWorldCommand resetWorldCommand;
+        private FireworksTask fireWorksTask;
+        private PlayerGameService playerGameService;
+        private GameRewardService gameRewardService;
 
-    public GameManager(Skywar plugin, PlayerManager playerManager, ScoreBoardManager scoreBoardManager,
-            ArenaMessenger arenaMessenger,
-            ResetWorldCommand resetWorldCommand, FireworksTask fireWorksTask, PlayerGameService playerGameService) {
-        this.plugin = plugin;
-        this.playerManager = playerManager;
-        this.scoreBoardManager = scoreBoardManager;
-        this.arenaMessenger = arenaMessenger;
-        this.resetWorldCommand = resetWorldCommand;
-        this.fireWorksTask = fireWorksTask;
-        this.playerGameService = playerGameService;
-    }
+        public GameManager(Skywar plugin, PlayerManager playerManager, ScoreBoardManager scoreBoardManager,
+                        ArenaMessenger arenaMessenger,
+                        ResetWorldCommand resetWorldCommand, FireworksTask fireWorksTask,
+                        PlayerGameService playerGameService) {
+                this.plugin = plugin;
+                this.playerManager = playerManager;
+                this.scoreBoardManager = scoreBoardManager;
+                this.arenaMessenger = arenaMessenger;
+                this.resetWorldCommand = resetWorldCommand;
+                this.fireWorksTask = fireWorksTask;
+                this.playerGameService = playerGameService;
 
-    public JavaPlugin getPlugin() {
-        return plugin;
-    }
-
-    public FileConfiguration getConfig() {
-        return plugin.getConfig();
-    }
-
-    public void joinGame(Player player, Arena arena, String roomName) {
-        PlayerData playerData = this.playerManager.getOrCreate(player);
-
-        // Adiciona jogador a arena
-        arena.addPlayer(playerData);
-        arena.alivePlayers.add(playerData);
-
-        if (playerData.getArena() == null) {
-            this.playerGameService.preparePlayerForWaiting(playerData, arena);
-
-            // Envia mensagem para todos da arena
-            String joinMessage = this.getConfig().getString("messages.player_joined_arena")
-                    .replace("{player}", player.getDisplayName())
-                    .replace("{X}", String.valueOf(arena.getPlayers().size()))
-                    .replace("{Y}", String.valueOf(arena.maxPlayers));
-
-            this.arenaMessenger.sendMessageToArena(arena, joinMessage);
-
-            // Atualiza scoreboard
-            this.scoreBoardManager.updateScoreBoard(arena);
-
-        } else {
-            String message = this.getConfig().getString("messages.error_arena");
-            player.sendMessage(message);
-        }
-    }
-
-    public void leaveGame(Player player) {
-        PlayerData playerData = this.playerManager.get(player);
-
-        if (playerData == null || playerData.getArena() == null) {
-            String message = this.getConfig().getString(
-                    "messages.not_in_arena");
-
-            player.sendMessage(message);
-            return;
+                this.gameRewardService = new GameRewardService(
+                                this.getConfig(),
+                                this.arenaMessenger);
         }
 
-        Arena arena = playerData.getArena();
+        public JavaPlugin getPlugin() {
+                return plugin;
+        }
 
-        arena.removePlayer(playerData);
-        arena.alivePlayers.remove(playerData);
-        arena.spectators.remove(playerData);
+        public FileConfiguration getConfig() {
+                return plugin.getConfig();
+        }
 
-        this.scoreBoardManager.updateScoreBoard(arena);
-        this.scoreBoardManager.removeScoreBoard(player);
+        public void joinGame(Player player, Arena arena, String roomName) {
+                PlayerData playerData = this.playerManager.getOrCreate(player);
+                // Adiciona jogador a arena
+                arena.addPlayer(playerData);
+                arena.alivePlayers.add(playerData);
 
-        this.playerGameService.preparePlayerForLobby(
-                playerData,
-                false);
+                if (playerData.getArena() == null) {
+                        this.playerGameService.preparePlayerForWaiting(playerData, arena);
 
-        String playerLeftMessage = this.getConfig()
-                .getString("messages.player_leave_arena")
-                .replace(
-                        "{player}",
-                        player.getDisplayName())
-                .replace(
-                        "{X}",
-                        String.valueOf(arena.getPlayers().size()))
-                .replace(
-                        "{Y}",
-                        String.valueOf(arena.maxPlayers));
+                        // Envia mensagem para todos da arena
+                        String joinMessage = this.getConfig().getString("messages.player_joined_arena")
+                                        .replace("{player}", player.getDisplayName())
+                                        .replace("{X}", String.valueOf(arena.getPlayers().size()))
+                                        .replace("{Y}", String.valueOf(arena.maxPlayers));
 
-        this.arenaMessenger.sendMessageToArena(
-                arena,
-                playerLeftMessage);
-    }
+                        this.arenaMessenger.sendMessageToArena(arena, joinMessage);
 
-    public void forceStart(Arena arena) {
-        int timeToStart = 10;
-        arena.setTimeToStart(timeToStart);
+                        // Atualiza scoreboard
+                        this.scoreBoardManager.updateScoreBoard(arena);
+                        this.checkCountdown(arena);
 
-        new StartCountdownTask(
-                this,
-                arena,
-                this.arenaMessenger,
-                timeToStart).runTaskTimer(plugin, 0L, 20L);
-    }
+                } else {
+                        String message = this.getConfig().getString("messages.error_arena");
+                        player.sendMessage(message);
+                }
+        }
 
-    public void sendStartGameMessages(Arena arena) {
-        String message = this.getConfig().getString("messages.game_start");
-        this.arenaMessenger.sendMessageToArena(arena, message);
+        public void leaveGame(Player player) {
+                PlayerData playerData = this.playerManager.get(player);
 
-        // Mensagem para a arena do PvP Off
-        String messagePvP = this.getConfig().getString("messages.pvp_message")
-                .replace("{seconds}", String.valueOf(arena.pvpOffTime));
-        this.arenaMessenger.sendMessageToArena(arena, messagePvP);
+                if (playerData == null || playerData.getArena() == null) {
+                        String message = this.getConfig().getString(
+                                        "messages.not_in_arena");
 
-    }
+                        player.sendMessage(message);
+                        return;
+                }
 
-    public void startGame(Arena arena) {
-        arena.setStatus(StatusArena.STARTED);
+                Arena arena = playerData.getArena();
 
-        // Mensagem para a arena que indica que o Jogo começou
-        this.sendStartGameMessages(arena);
-        this.playerGameService.preparePlayersForGame(arena);
+                arena.removePlayer(playerData);
+                arena.alivePlayers.remove(playerData);
+                arena.spectators.remove(playerData);
 
-        // Task para monitorar o pvp
-        new PvPEnableTask(arena, arenaMessenger, getConfig())
-                .runTaskLater(plugin, 100L);
+                this.scoreBoardManager.updateScoreBoard(arena);
+                this.scoreBoardManager.removeScoreBoard(player);
 
-        // Task para monitorar partida
-        new MatchMonitorTask(this, arena, scoreBoardManager)
-                .runTaskTimer(plugin, 20L, 20L);
+                this.playerGameService.preparePlayerForLobby(playerData, false);
 
-    };
+                String playerLeftMessage = this.getConfig()
+                                .getString("messages.player_leave_arena")
+                                .replace("{player}", player.getDisplayName())
+                                .replace("{X}", String.valueOf(arena.getPlayers().size()))
+                                .replace("{Y}", String.valueOf(arena.maxPlayers));
 
-    public void endGame(Arena arena) {
+                this.arenaMessenger.sendMessageToArena(
+                                arena,
+                                playerLeftMessage);
+                this.checkCountdown(arena);
+        }
 
-        PlayerData playerWinner = arena.getWinner();
-        Player playerWinnerEntity = playerWinner.getPlayerEntity();
+        public void forceStart(Arena arena) {
+                int timeToStart = 5;
+                arena.setTimeToStart(timeToStart);
 
-        // Mensagem de congratulações para o vencedor
-        String message = this.getConfig().getString("messages.winning_message");
+                StartCountdownTask task = new StartCountdownTask(
+                                this,
+                                arena,
+                                this.arenaMessenger,
+                                timeToStart);
 
-        playerWinnerEntity.sendMessage(message);
-        this.arenaMessenger.sendMessageToArena(arena, message);
+                arena.setCountdownTask(task);
+                task.runTaskTimer(plugin, 0L, 20L);
+        }
 
-        // Mensagem do vencedor
-        String messageFinished = this.getConfig()
-                .getString("messages.game_finished")
-                .replace("{player}", playerWinnerEntity.getDisplayName());
+        public void sendStartGameMessages(Arena arena) {
+                String message = this.getConfig().getString("messages.game_start");
+                this.arenaMessenger.sendMessageToArena(arena, message);
 
-        this.arenaMessenger.sendMessageToArena(arena, messageFinished);
+                // Mensagem para a arena do PvP Off
+                String messagePvP = this.getConfig().getString("messages.pvp_message")
+                                .replace("{seconds}", String.valueOf(arena.pvpOffTime));
+                this.arenaMessenger.sendMessageToArena(arena, messagePvP);
 
-        // Mensagem de que todos serão retornados ao lobby
-        String messageLobby = this.getConfig().getString("messages.lobby_message");
-        this.arenaMessenger.sendMessageToArena(arena, messageLobby);
+        }
 
-        // TODO enviar 1000 créditos para o vencedor
-        this.playerGameService.prepareWinner(playerWinner, arena);
+        public void startGame(Arena arena) {
+                arena.setStatus(StatusArena.STARTED);
 
-        new EndGameTask(
-                arena,
-                this.playerGameService,
-                this.resetWorldCommand,
-                playerWinner,
-                this.fireWorksTask).runTaskTimer(this.plugin, 0L, 20L);
-    }
+                // Mensagem para a arena que indica que o Jogo começou
+                this.sendStartGameMessages(arena);
+                this.playerGameService.preparePlayersForGame(arena);
+
+                // Task para monitorar o pvp
+                new PvPEnableTask(arena, this.arenaMessenger, this.scoreBoardManager, getConfig())
+                                .runTaskTimer(plugin, 20L, 20L);
+
+                // Task para monitorar partida
+                new MatchMonitorTask(this, arena, this.scoreBoardManager)
+                                .runTaskTimer(plugin, 20L, 20L);
+
+        };
+
+        public void endGame(Arena arena) {
+                PlayerData playerWinner = arena.getWinner();
+                this.gameRewardService.rewardWinner(playerWinner);
+                this.gameRewardService.sendGameFinishedMessages(arena, playerWinner);
+                this.gameRewardService.rewardParticipants(arena);
+                this.gameRewardService.sendCreditsSummary(arena);
+                this.playerGameService.prepareWinner(playerWinner, arena);
+
+                new EndGameTask(
+                                arena,
+                                this.playerGameService,
+                                this.resetWorldCommand,
+                                playerWinner,
+                                this.fireWorksTask)
+                                .runTaskTimer(
+                                                this.plugin,
+                                                0L,
+                                                20L);
+
+        }
+
+        private void checkCountdown(Arena arena) {
+                if (arena.getStatus() == StatusArena.STARTED || arena.getStatus() == StatusArena.FINISHING
+                                || arena.getStatus() == StatusArena.RESETING) {
+                        return;
+                }
+                // Caso tenha a quantidade minima de players
+                if (arena.getPlayers().size() >= arena.minPlayers) {
+                        if (arena.getTimeToStart() < 90) {
+                                return;
+                        }
+                        int timeToStart = 90;
+                        arena.setTimeToStart(timeToStart);
+
+                        StartCountdownTask task = new StartCountdownTask(
+                                        this,
+                                        arena,
+                                        this.arenaMessenger,
+                                        arena.getTimeToStart());
+
+                        arena.setCountdownTask(task);
+
+                        task.runTaskTimer(plugin, 0L, 20L);
+                }
+
+                // Caso a arena esteja lotada, reduz o tempo de inicio para 30
+                if (arena.getPlayers().size() == arena.maxPlayers && arena.getTimeToStart() > 30) {
+                        if (arena.getTimeToStart() < 30) {
+                                return;
+                        }
+                        int timeToStart = 30;
+                        arena.setTimeToStart(timeToStart);
+
+                        StartCountdownTask task = new StartCountdownTask(
+                                        this,
+                                        arena,
+                                        this.arenaMessenger,
+                                        arena.getTimeToStart());
+
+                        arena.setCountdownTask(task);
+
+                        arenaMessenger.sendMessageToArena(arena,
+                                        "§3[SkyWar] §6Sala cheia! Tempo reduzido para §f30 segundos§6!");
+                }
+
+                // Stop CountdownTask pois está menor que o minimo de players
+                if (arena.getPlayers().size() < arena.minPlayers) {
+                        int timeToStart = 90;
+                        arena.setTimeToStart(timeToStart);
+                        if (arena.getCountdownTask() != null)
+                                arena.getCountdownTask().cancel();
+                        arena.setStatus(StatusArena.OPEN);
+                }
+
+                // Caso a arena esteja quase lotada, as ultimas vagas serão para os VIPs
+                if (arena.getPlayers().size() >= (arena.maxPlayers - 2)) {
+                        arena.setStatus(StatusArena.VIP);
+                }
+                if (arena.getPlayers().size() < (arena.maxPlayers - 2)) {
+                        arena.setStatus(StatusArena.OPEN);
+                }
+        }
 
 }

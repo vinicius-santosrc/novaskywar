@@ -1,7 +1,10 @@
 package br.dev.santos.skywar.player;
 
+import java.util.ArrayList;
+
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
+import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -10,7 +13,9 @@ import br.dev.santos.skywar.kit.KitManager;
 import br.dev.santos.skywar.kit.KitSelectionService;
 import br.dev.santos.skywar.player.PlayerData.PlayerState;
 import br.dev.santos.skywar.scoreboard.ScoreBoardManager;
+import br.dev.santos.skywar.utils.TeleportUtils;
 import br.dev.santos.skywar.warp.WarpManager;
+import br.dev.santos.skywar.warp.WarpManager.Coord;
 
 public class PlayerGameService {
 
@@ -28,12 +33,16 @@ public class PlayerGameService {
 
     public void preparePlayerForWaiting(PlayerData playerData, Arena arena) {
         Player playerEntity = playerData.getPlayerEntity();
+        playerData.setStatus(PlayerState.WAITING);
+
         playerData.setArena(arena);
         playerEntity.getInventory().clear();
         playerEntity.setGameMode(GameMode.ADVENTURE);
+        playerEntity.setTotalExperience(0);
 
         // Teleporta para o waiting lobby
-        this.warpManager.teleportToWaitingLobby(playerEntity);
+        Coord waitingLobbyCoord = TeleportUtils.getWaitingLobby(arena);
+        this.warpManager.teleport(playerEntity, waitingLobbyCoord);
         playerEntity.getInventory().clear();
 
         // Dá os items de seleção de kit
@@ -42,7 +51,11 @@ public class PlayerGameService {
 
     public void prepareWinner(PlayerData playerData, Arena arena) {
         Player playerWinnerEntity = playerData.getPlayerEntity();
-        this.warpManager.teleportToWinnerArea(playerWinnerEntity, arena);
+
+        // Teleporta para winnerPlace
+        Coord winnerPlace = TeleportUtils.getWinnerPlace(arena);
+        this.warpManager.teleport(playerWinnerEntity, winnerPlace);
+
         playerWinnerEntity.getLocation();
         playerWinnerEntity.setAllowFlight(true);
         playerWinnerEntity.setFlying(true);
@@ -64,30 +77,32 @@ public class PlayerGameService {
 
             playerData.setStatus(PlayerState.PLAYING);
 
-            // Teleporta cada player a sua ilha
-            int warpNumber = indexIsland + 1;
-            playerData.setIsland(warpNumber);
-
             // Limpa inventário e levels de xp
             // Seta status da arena como STARTED
 
             playerEntity.getInventory().clear();
             playerEntity.setLevel(0);
+            playerEntity.setTotalExperience(0);
             playerEntity.setExp(0);
             this.kitManager.giveItemsToPlayer(playerEntity, playerData.getKit());
 
-            this.warpManager.teleportToIsland(playerEntity, arena, indexIsland);
+            // Teleporta cada player a sua ilha
+            indexIsland++;
+            playerData.setIsland(indexIsland);
+            Coord islandCoord = TeleportUtils.getCoordIslandArenaByIndex(arena, indexIsland);
+            this.warpManager.teleport(playerEntity, islandCoord);
+
         }
     }
 
     public void prepareForSpectator(PlayerData playerData) {
         Player player = playerData.getPlayerEntity();
         player.setGameMode(GameMode.SPECTATOR);
+        playerData.setStatus(PlayerState.DEAD);
     }
 
     public void resetPlayerAfterGame(Arena arena) {
-        for (PlayerData playerData : new java.util.ArrayList<PlayerData>(
-                arena.getPlayers())) {
+        for (PlayerData playerData : new ArrayList<PlayerData>(arena.getPlayers())) {
 
             this.preparePlayerForLobby(
                     playerData,
@@ -102,8 +117,10 @@ public class PlayerGameService {
         Player playerEntity = playerData.getPlayerEntity();
 
         if (finishedGame) {
-            playerEntity.performCommand("skywar leaveafterwin");
+            playerEntity.performCommand("skywar sair");
         }
+
+        this.scoreBoardManager.removeScoreBoard(playerEntity);
 
         playerData.setArena(null);
         playerData.setKit(null);
@@ -116,7 +133,8 @@ public class PlayerGameService {
                 new ItemStack[4]);
         playerEntity.setAllowFlight(false);
 
-        this.warpManager.teleportToLobby(playerEntity);
+        // Teleporta ao lobby
+        this.warpManager.teleportToLoobySw(playerEntity);
 
         playerEntity.setPlayerListName(
                 ChatColor.WHITE + playerEntity.getName());
@@ -125,5 +143,7 @@ public class PlayerGameService {
                 ChatColor.WHITE + playerEntity.getName());
 
         playerEntity.setCustomNameVisible(true);
+
+        playerEntity.setGameMode(GameMode.ADVENTURE);
     }
 }

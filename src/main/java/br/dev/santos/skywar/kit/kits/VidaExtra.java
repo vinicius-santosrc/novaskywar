@@ -9,6 +9,6 @@ import br.dev.santos.skywar.kit.ability.abilities.VidaExtraAbility;
 public class VidaExtra extends Kit {
 
     public VidaExtra(VidaExtraAbility vidaExtraAbility) {
-        super("Vida-extra", true, new ItemStack(Material.GOLDEN_APPLE), true, vidaExtraAbility);
+        super("Vida-extra", true, new ItemStack(Material.GOLDEN_APPLE, 1 ,(short) 1), true, vidaExtraAbility);
     }
 }

@@ -103,7 +103,7 @@ public final class Skywar extends JavaPlugin {
         this.scoreBoardManager = new ScoreBoardManager();
 
         this.arenaMessenger = new ArenaMessenger();
-        this.warpManager = new WarpManager();
+        this.warpManager = new WarpManager(this.getConfig());
 
         this.eliminationHandler = new EliminationHandler(
                 this.arenaMessenger,
@@ -122,8 +122,7 @@ public final class Skywar extends JavaPlugin {
                 this.warpManager,
                 this.arenaMessenger);
 
-        this.kitSelectionService = new KitSelectionService(
-                this.playerManager);
+        this.kitSelectionService = new KitSelectionService(this.playerManager, this.kitManager);
 
         this.playerGameService = new PlayerGameService(
                 this.scoreBoardManager,
@@ -156,7 +155,7 @@ public final class Skywar extends JavaPlugin {
                     "GameManager não foi inicializado.");
         }
 
-        this.arenaLoader = new ArenaLoader(this.getConfig(),this.arenaManager);
+        this.arenaLoader = new ArenaLoader(this.getConfig(), this.arenaManager);
         this.arenaLoader.loadArenas();
     }
 
@@ -253,13 +252,6 @@ public final class Skywar extends JavaPlugin {
 
         if (subCommand.equalsIgnoreCase("sair")) {
             this.gameManager.leaveGame(player);
-            player.setGameMode(GameMode.ADVENTURE);
-            return true;
-        }
-
-        if (subCommand.equalsIgnoreCase("leaveafterwin")) {
-            this.gameManager.leaveGame(player);
-            player.setGameMode(GameMode.ADVENTURE);
             return true;
         }
 
@@ -269,6 +261,14 @@ public final class Skywar extends JavaPlugin {
                         player,
                         args[1]);
             }
+
+            return true;
+        }
+
+        if (command.getName().equalsIgnoreCase("start")) {
+            PlayerData playerData = this.playerManager.get(player);
+            Arena arena = playerData.getArena();
+            this.gameManager.forceStart(arena);
 
             return true;
         }
