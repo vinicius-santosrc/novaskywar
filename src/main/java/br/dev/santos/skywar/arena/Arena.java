@@ -52,7 +52,7 @@ public class Arena {
     }
     
     public ConfigurationSection getArenaConfig() {
-        return this.arenaConfig.getConfigurationSection("arenas." + this.nameOfTheWorld);
+        return this.arenaConfig.getConfigurationSection("arenas." + this.name);
     }
 
     public StartCountdownTask getCountdownTask() {

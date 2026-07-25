@@ -283,7 +283,7 @@ public final class Skywar extends JavaPlugin {
         }
 
         if (subCommand.equalsIgnoreCase("reload")) {
-            reloadConfig();
+            this.reloadConfig();
 
             sendMessageToPlayer(
                     player,
@@ -295,6 +295,36 @@ public final class Skywar extends JavaPlugin {
         if (subCommand.equalsIgnoreCase("kit")) {
             handleKitCommand(player, args);
             return true;
+        }
+
+        if (subCommand.equalsIgnoreCase("create")) {
+            this.getArenaManager().createArena(player, args[1], player.getWorld().getName(), Integer.parseInt(args[2]), getConfig());
+            this.saveConfig();
+            return true;
+        }
+
+        if (subCommand.equalsIgnoreCase("remove")) {
+            boolean result = this.getArenaManager().removeArena(player, args[1], getConfig());
+            this.saveConfig();
+            return result;
+        }
+        
+        if (subCommand.equalsIgnoreCase("set")) {
+            if (!this.arenaManager.exists(args[1], "1")) {
+                player.sendMessage("§cA arena " + args[1] + " não existe.");
+                return false;
+            }
+            Arena arenaSelected = this.arenaManager.getArena(args[1], "1");
+
+            if (args[3] == null) {
+                args[3] = "";
+            }
+            
+            this.getArenaManager().handleEditArena(arenaSelected, player, args[2], args[3], getConfig());
+
+            this.saveConfig();
+            return true;
+            
         }
 
         sendMessageToPlayer(

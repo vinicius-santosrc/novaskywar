@@ -42,12 +42,16 @@ messages:
   money_player: "§aVocê tem {money} créditos"
 
   help:
-    - "§6----- §3[SkyWar] §6-----"
-    - "§6/skywar create <mapa> <nomemundo> <maxplayers> <minplayers> - §fCriação de mapas"
+    - "§6--------- §3[NovaSkywar] §6---------"
+    - "§6/skywar create <nomemapa> <maxplayers> - §fCriação de mapas"
+    - "§6/skywar set <island/spectator/waitingLobby> <numeroIlha> - §fSeta o determinado local como tipo island/spectator/waitinglobby"
     - "§6/skywar remove <mapa> - §fRemoção de mapas"
-    - "§6/skywar start - §fForça o início da partida atual"
+    - "§6/skywar start <mapa> <sala> - §fForça o início da partida atual"
+    - "§6/start - §fForça o início da partida atual"
+    - "§6/skywar kit <nomeDoKit> - §fSeleciona o kit digitado"
+    - "§6/skywar kit remove - - §fRemove o kit atual"
     - "§6/skywar help - §fAjuda com o plugin"
-    - "------------------"
+    - "§6------------------------------------"
 lobby:
   worldName: "LobbySW2"
   x: 4010
