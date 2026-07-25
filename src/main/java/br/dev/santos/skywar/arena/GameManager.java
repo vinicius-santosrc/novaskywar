@@ -238,8 +238,14 @@ public class GameManager {
                 if (arena.getPlayers().size() < arena.minPlayers) {
                         int timeToStart = 90;
                         arena.setTimeToStart(timeToStart);
-                        if (arena.getCountdownTask() != null)
+                        if (arena.getCountdownTask() != null) {
                                 arena.getCountdownTask().cancel();
+                                for(PlayerData playerDataArena : arena.getPlayers()) {
+                                        playerDataArena.getPlayerEntity().setLevel(0);
+                                        playerDataArena.getPlayerEntity().setTotalExperience(0);
+                                        playerDataArena.getPlayerEntity().setExp(0);
+                                }
+                        }
                         arena.setStatus(StatusArena.OPEN);
                 }
 

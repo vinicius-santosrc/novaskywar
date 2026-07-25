@@ -38,7 +38,9 @@ public class PlayerGameService {
         playerData.setArena(arena);
         playerEntity.getInventory().clear();
         playerEntity.setGameMode(GameMode.ADVENTURE);
+        playerEntity.setLevel(0);
         playerEntity.setTotalExperience(0);
+        playerEntity.setExp(0);
 
         // Teleporta para o waiting lobby
         Coord waitingLobbyCoord = TeleportUtils.getWaitingLobby(arena);
@@ -99,6 +101,10 @@ public class PlayerGameService {
         Player player = playerData.getPlayerEntity();
         player.setGameMode(GameMode.SPECTATOR);
         playerData.setStatus(PlayerState.DEAD);
+
+        player.setLevel(0);
+        player.setTotalExperience(0);
+        player.setExp(0);
     }
 
     public void resetPlayerAfterGame(Arena arena) {
@@ -126,6 +132,10 @@ public class PlayerGameService {
         playerData.setKit(null);
         playerData.setStatus(PlayerState.LOBBY);
         playerData.setIsland(0);
+
+        playerEntity.setLevel(0);
+        playerEntity.setTotalExperience(0);
+        playerEntity.setExp(0);
 
         playerEntity.setFlying(false);
         playerEntity.getInventory().clear();
