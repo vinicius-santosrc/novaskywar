@@ -121,11 +121,11 @@ public final class SignClickListener implements Listener {
             case "§4§l[Resetando]":
             case "§c§l[Fechada]":
             case "§c§l[Inválida]":
-                break;
+                return true;
             default:
                 break;
         }
-        return true;
+        return false;
     }
 
     public static void updateSign(Sign sign, ArenaManager arenaManager) {

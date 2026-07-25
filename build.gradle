@@ -3,7 +3,7 @@ plugins {
 }
 
 group = 'br.dev.santos'
-version = '2.2.4'
+version = '2.2.6'
 
 repositories {
     mavenCentral()
@@ -29,7 +29,7 @@ dependencies {
 
 jar {
     archiveBaseName.set('SkyWar')
-    archiveVersion.set('2.2.4')
+    archiveVersion.set('2.2.6')
     manifest {
         attributes(
             'Main-Class': 'br.dev.santos.skywar.Skywar'
