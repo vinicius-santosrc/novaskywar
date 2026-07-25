@@ -1,5 +1,5 @@
 name: SkyWar
-version: '2.1.2'
+version: '2.2.5'
 main: br.dev.santos.skywar.Skywar
 api-version: '1.8'
 description: "Plugin de SkyWar. Copywrite NovaGames 2024."
