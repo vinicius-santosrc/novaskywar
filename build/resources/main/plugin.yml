@@ -1,5 +1,5 @@
 name: SkyWar
-version: '1.0.0'
+version: '2.0.1'
 main: br.dev.santos.skywar.Skywar
 api-version: '1.8'
 description: "Plugin de SkyWar. Copywrite NovaGames 2024."
@@ -12,3 +12,9 @@ commands:
   skywar:
     description: Entrar em uma arena de SkyWars.
     usage: /skywar
+  resetworld:
+    description: Reseta o mundo de SkyWars.
+    usage: /resetworld
+  start:
+    description: Inicia a partida atual de SkyWar
+    usage: /start

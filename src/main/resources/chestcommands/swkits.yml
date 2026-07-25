@@ -1,0 +1,281 @@
+######################
+#+                  +#
+#   MENU SETTINGS    #
+#+                  +#
+######################
+
+menu-settings:
+
+  # name - appears as the title - REQUIRED
+  name: '&8&lSeus kits'
+
+  # rows - the number of rows of the chest - REQUIRED
+  rows: 5
+
+  # command - OPTIONAL (you can remove this or set it to '')
+  # Bind multiple commands using ; (command: 'menu; m; me')
+  command: 'swkits'
+
+  # auto-refresh - OPTIONAL
+  # How frequently the menu will be refreshed, in seconds.
+  # Useful if you have variables in items' descriptions.
+  auto-refresh: 5
+
+  # This command command will be execute when the menu is opened.
+  # Supports all the icon command types.
+  open-action: ''
+
+  # open-with-item - OPTIONAL
+  # The menu will open only right-clicking with orange wool [35:1]
+  open-with-item:
+    id: wool:1
+    left-click: false
+    right-click: true
+
+
+######################
+#+                  +#
+#       ITEMS        #
+#+                  +#
+######################
+
+arqueiro:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Arqueiro'
+  NAME: '&bKit Arqueiro'
+  LORE:
+    - '&fRecebe um Arco Fire Aspect 1'
+  ID: 261
+  POSITION-X: 1
+  POSITION-Y: 1
+
+homemfogo:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Homem-fogo'
+  NAME: '&3Kit Homem-Fogo'
+  LORE:
+    - '&fRecebe uma Espada de Madeira com Fire Aspect'
+  ID: 268
+  POSITION-X: 3
+  POSITION-Y: 1
+sacerdote:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Sacerdote'
+  NAME: '&1Kit Sacerdote'
+  LORE:
+    - '&fRecebe 3 Poções de Vida e 3 Poções de Regeneração'
+  ID: 373
+  POSITION-X: 4
+  POSITION-Y: 1
+homembomba:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Homem-bomba'
+  NAME: '&4Kit Homem-Bomba'
+  LORE:
+    - '&fRecebe 3 TNTs'
+  ID: 46
+  POSITION-X: 6
+  POSITION-Y: 1
+vampiro:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Vampiro'
+  NAME: '&6[VIP] &bKit Vampiro'
+  LORE:
+    - '&fRecupera 5 corações ao matar um jogador.'
+  ID: "373:1"
+  POSITION-X: 8
+  POSITION-Y: 3
+encantador:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Encantador'
+  NAME: '&eKit Encantador'
+  LORE:
+    - '&fRecebe 5 Poções de EXP'
+  ID: 116
+  POSITION-X: 9
+  POSITION-Y: 1
+minerador:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Minerador'
+  NAME: '&3Kit Minerador'
+  LORE:
+    - '&fRecebe uma Picareta de Ferro'
+  ID: 257
+  POSITION-X: 7
+  POSITION-Y: 1
+
+construtor:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Construtor'
+  NAME: '&bKit Construtor'
+  LORE:
+    - '&fRecebe 32 blocos de pedra'
+  ID: 1
+  POSITION-X: 1
+  POSITION-Y: 2
+
+zeus:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Zeus'
+  NAME: '&6[VIP] &aKit Zeus'
+  LORE:
+    - '&fRecebe 3 Blaze Rods'
+    - '&fQue podem soltar raios'
+  ID: 369
+  POSITION-X: 2
+  POSITION-Y: 3
+pesopena:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Peso-pena'
+  NAME: '&2Kit Peso-Pena'
+  LORE:
+    - '&fRecebe uma Bota de ferro'
+    - '&fCom Peso-Pena 4'
+  ID: 288
+  POSITION-X: 4
+  POSITION-Y: 2
+esquimo:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Esquimo'
+  NAME: '&3Kit Esquimó'
+  LORE:
+    - '&fRecebe 10 bolas de neve'
+  ID: 332
+  POSITION-X: 2
+  POSITION-Y: 2
+poseidon:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Poseidon'
+  NAME: '&9Kit Poseidon'
+  LORE:
+    - '&fRecebe 5 Baldes de água'
+  ID: 326
+  POSITION-X: 2
+  POSITION-Y: 1
+homemdascavernas:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Homem-das-Cavernas'
+  NAME: '&1Kit Homem das Cavernas'
+  LORE:
+    - '&fRecebe um isqueiro'
+  ID: 259
+  POSITION-X: 3
+  POSITION-Y: 2
+apple:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Apple'
+  NAME: '&5Kit Apple'
+  LORE:
+    - '&fRecebe 3 maçãs douradas'
+  ID: 322
+  POSITION-X: 5
+  POSITION-Y: 2
+grandpa:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Grandpa'
+  NAME: '&dKit GrandPa'
+  LORE:
+    - '&fRecebe uma pá com Repulsão I com 10 hits'
+  ID: 284
+  POSITION-X: 7
+  POSITION-Y: 2
+ferramentas:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Ferramentas'
+  NAME: '&aKit Ferramentas'
+  LORE:
+    - '&fRecebe 1 mesa de trabalho,'
+    - '&f1 fornalha, 1 machado de pedra,'
+    - '&f1 picareta de pedra e 1 pá de madeira'
+  ID: 58
+  POSITION-X: 6
+  POSITION-Y: 2
+homemaranha:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Homem-aranha'
+  NAME: '&6[VIP] &bKit Homem Aranha'
+  LORE:
+    - '&fRecebe 5 Teias'
+  ID: 30
+  POSITION-X: 1
+  POSITION-Y: 3
+theflash:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit The-flash'
+  NAME: '&dKit The Flash'
+  LORE:
+    - '&fRecebe uma Poção de velocidade'
+  ID: "373:2"
+  POSITION-X: 8
+  POSITION-Y: 1
+ninja:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Ninja'
+  NAME: '&6[VIP] &5Kit Ninja'
+  LORE:
+    - '&fRecebe um set full couro (preto) +'
+    - '&f2 poções de speed II (1:30)'
+  ID: "35:15"
+  POSITION-X: 6
+  POSITION-Y: 3
+sopa:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Sopa'
+  NAME: '&6[VIP] &aKit Sopa'
+  LORE:
+    - '&fRecebe 3 sopas que regeneram 3 corações, cada'
+  ID: 282
+  POSITION-X: 7
+  POSITION-Y: 3
+vidaextra:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Vida-extra'
+  NAME: '&6[VIP] &3Kit Vida Extra'
+  LORE:
+    - '&fVolte para sua Ilha se voce cair ou morrer(1 Vez por Jogo)'
+  ID: "322:1"
+  POSITION-X: 3
+  POSITION-Y: 3
+assassino:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Assassino'
+  NAME: '&6[VIP] &eKit Assassino'
+  LORE:
+    - '&f30 segundos de Força após matar um jogador'
+  ID: 401
+  POSITION-X: 4
+  POSITION-Y: 3
+
+enderman:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Enderman'
+  NAME: '&6[VIP] &2Kit Enderman'
+  LORE:
+    - '&fRecebe uma Ender Pearl +'
+    - '&f75% de chance de drop de Ender Pearl ao'
+    - '&fmatar um jogador'
+  ID: 368
+  POSITION-X: 5
+  POSITION-Y: 3
+
+paladino:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit Paladino'
+  NAME: '&2Kit Paladino'
+  LORE:
+    - '&fRecebe um Peitoral de Ferro'
+  ID: 307
+  POSITION-X: 5
+  POSITION-Y: 1
+
+removerkit:
+  KEEP-OPEN: false
+  COMMAND: 'skywar kit remove'
+  NAME: '&aRemover kit'
+  LORE:
+    - '&fClique para ficar sem nenhum KIT'
+  ID: 335
+  POSITION-X: 5
+  POSITION-Y: 5
+
+

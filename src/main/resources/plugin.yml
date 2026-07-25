@@ -12,3 +12,9 @@ commands:
   skywar:
     description: Entrar em uma arena de SkyWars.
     usage: /skywar
+  resetworld:
+    description: Reseta o mundo de SkyWars.
+    usage: /resetworld
+  start:
+    description: Inicia a partida atual de SkyWar
+    usage: /start

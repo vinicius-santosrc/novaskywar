@@ -5,26 +5,32 @@ messages:
   incorrect_usage: "§cUso incorreto! Tente /skywar help"
   no_permission: "Você não tem permissão suficiente para executar esse comando."
   player_only: "Apenas jogadores podem usar esse comando."
-  kit_selected: "§aVocê ativou o kit {kit}."
+  kit_selected: "§aVocê ativou o kit {kit}"
   kit_removed: "§cKit removido com sucesso."
-  actual_kit: "§bSeu kit selecionado é o: {kit}."
+  actual_kit: "§bSeu kit selecionado é o: {kit}"
   noactual_kit: "§cNenhum kit selecionado."
   error_arena: "§cVocê já está em uma arena."
   not_in_arena: "§cVocê não está em uma arena."
+  all_kits_have: "§cVocê já tem todos os kits!"
+  ender_pearl_feast: "§cVocê não pode teleportar tão próximo ao feast"
+  no_credits_enoght: "§cVocê não tem créditos suficientes."
+  deathmessage: "§2Acesse seu inventário para acesso as opções de espectador."
+  buy_new_kit:
+    - "§aVocê adiquiriu o kit {kit} por {credits} Créditos."
+    - "§aUse o menu de kits para ativá-lo"
   join_arena: "§aVocê se juntou a sala SW-{arena}"
   leave_arena: "§cVocê saiu da arena."
   player_joined_arena: "§3[SkyWar] §6{player} se juntou a partida! ({X}/{Y})"
   player_leave_arena: "§3[SkyWar] §6{player} saiu da partida! ({X}/{Y})"
   seconds_to_start: "§3[SkyWar] §6Começando em §f{seconds} segundos§6!"
+  minutes_to_start: "§3[SkyWar] §6Começando em §f{minutes} minutos§6!"
   game_start: "§3[SkyWar] §6Boa sorte! O jogo começou!"
   pvp_message: "§3[SkyWar] §6O PvP será liberado em {seconds} segundos!"
   winning_message: "§3[SkyWar] §6Parabéns! Você venceu o jogo!"
   game_finished: "§3[SkyWar] §6O jogo acabou! O vencedor foi: {player}"
-  lobby_message: "§6Vocês serão teleportados para o lobby em 15 segundos!"
-  winner_message:
-    - "§6Você ganhou §f{creditos} §6nessa partida:"
-    - "   §f+20 §6por participação"
-    - "   §f+100 §6pela vitória"
+  lobby_message: "§3[SkyWar] §6Vocês serão teleportados para o lobby em 15 segundos!"
+  enderpearl_message: "§2Você será teleportado em 3 segundos..."
+  credits_count_final_match: "§6Você ganhou §f{credits} créditos §6nessa partida:"
   messageDeath: "§3[SkyWar] §6{player} morreu! ({X}/{Y})"
   earningpoints: "§6+{points}"
   death: "§3[SkyWar] §6{player} caiu ({X}/{Y})"
@@ -32,11 +38,281 @@ messages:
   first_blood_message: "§3[FirstBlood] §6{killer} eliminou {player}! ({X}/{Y})"
   extralifekit_message: "§3[SkyWar] §6{player} morreu porém estava utilizando o kit Vida Extra!"
   extralife_message_to_player: "§cVocê usou sua vida extra!"
+  pvpenabled: "§3[SkyWar] §6O PvP está liberado!"
+  money_player: "§aVocê tem {money} créditos"
 
   help:
-    - "§6----- §3[SkyWar] &6-----"
-    - "§6/skywar create <mapa> - Criação de mapas"
-    - "§6/skywar remove <mapa> - Remoção de mapas"
-    - "§6/start - Força o início da partida"
-    - "§6/skywar help - Ajuda com o plugin"
+    - "§6----- §3[SkyWar] §6-----"
+    - "§6/skywar create <mapa> <nomemundo> <maxplayers> <minplayers> - §fCriação de mapas"
+    - "§6/skywar remove <mapa> - §fRemoção de mapas"
+    - "§6/skywar start - §fForça o início da partida atual"
+    - "§6/skywar help - §fAjuda com o plugin"
     - "------------------"
+lobby:
+  worldName: "LobbySW2"
+  x: 4010
+  y: 61
+  z: 1003
+arenas:
+  PixelLands:
+    enabled: true
+    worldName: "PixelLands"
+    max-players: 12
+    min-players: 4
+    pvp-off-time: 5
+
+    warps:
+      waiting: 
+        worldName: "WaitingLobby"
+        x: -745
+        y: 51
+        z: -1238
+      winner:
+        worldName: "PixelLands"
+        x: 143
+        y: 119
+        z: -238
+
+    islands:
+      1: 
+        worldName: "PixelLands"
+        x: 143
+        y: 104
+        z: -205
+      2: 
+        worldName: "PixelLands"
+        x: 159
+        y: 104
+        z: -209
+      3: 
+        worldName: "PixelLands"
+        x: 171
+        y: 104
+        z: -221
+      4: 
+        worldName: "PixelLands"
+        x: 176
+        y: 104
+        z: -238
+      5: 
+        worldName: "PixelLands"
+        x: 172
+        y: 104
+        z: -256
+      6: 
+        worldName: "PixelLands"
+        x: 159
+        y: 104
+        z: -267
+      7: 
+        worldName: "PixelLands"
+        x: 143
+        y: 104
+        z: -273
+      8: 
+        worldName: "PixelLands"
+        x: 125
+        y: 104
+        z: -267
+      9: 
+        worldName: "PixelLands"
+        x: 114
+        y: 104
+        z: -256
+      10: 
+        worldName: "PixelLands"
+        x: 108
+        y: 104
+        z: -238
+      11: 
+        worldName: "PixelLands"
+        x: 114
+        y: 104
+        z: -222
+      12: 
+        worldName: "PixelLands"
+        x: 125
+        y: 104
+        z: -209
+
+  SkyLands:
+    enabled: true
+    worldName: "SkyLands"
+    max-players: 16
+    min-players: 8
+    pvp-off-time: 5
+
+    warps:
+      waiting: 
+        worldName: "WaitingLobby"
+        x: -745
+        y: 51
+        z: -1238
+      winner: 
+        worldName: "SkyLands"
+        x: -118
+        y: 11
+        z: -523
+
+    islands:
+      1: 
+        worldName: "SkyLands"
+        x: -95
+        y: 7
+        z: -428
+      2: 
+        worldName: "SkyLands"
+        x: -141
+        y: 7
+        z: -428
+      3: 
+        worldName: "SkyLands"
+        x: -180
+        y: 7
+        z: -439
+      4: 
+        worldName: "SkyLands"
+        x: -202
+        y: 7
+        z: -461
+      5: 
+        worldName: "SkyLands"
+        x: -213
+        y: 7
+        z: -500
+      6: 
+        worldName: "SkyLands"
+        x: -213
+        y: 7
+        z: -546
+      7: 
+        worldName: "SkyLands"
+        x: -202
+        y: 7
+        z: -585
+      8: 
+        worldName: "SkyLands"
+        x: -180
+        y: 7
+        z: -609
+      9: 
+        worldName: "SkyLands"
+        x: -141
+        y: 7
+        z: -620
+      10:
+        worldName: "SkyLands"
+        x: -95
+        y: 7
+        z: -620
+      11: 
+        worldName: "SkyLands"
+        x: -57
+        y: 7
+        z: -609
+      12: 
+        worldName: "SkyLands"
+        x: -34
+        y: 7
+        z: -585
+      13: 
+        worldName: "SkyLands"
+        x: -23
+        y: 7
+        z: -546
+      14: 
+        worldName: "SkyLands"
+        x: -23
+        y: 7
+        z: -500
+      15: 
+        worldName: "SkyLands"
+        x: -34
+        y: 7
+        z: -461
+      16: 
+        worldName: "SkyLands"
+        x: -56
+        y: 7
+        z: -439
+
+  DesertLands:
+    enabled: true
+    worldName: "DesertLands"
+    max-players: 12
+    min-players: 4
+    pvp-off-time: 5
+
+    warps:
+      waiting: 
+        worldName: "WaitingLobby"
+        x: -745
+        y: 51
+        z: -1238
+      winner:
+        worldName: "DesertLands"
+        x: 679
+        y: 84
+        z: 1149
+
+    islands:
+      1: 
+        worldName: "DesertLands"
+        x: 679
+        y: 76
+        z: 1178
+      2: 
+        worldName: "DesertLands"
+        x: 664
+        y: 76
+        z: 1177
+      3: 
+        worldName: "DesertLands"
+        x: 651
+        y: 76
+        z: 1164
+      4: 
+        worldName: "DesertLands"
+        x: 650
+        y: 76
+        z: 1149
+      5: 
+        worldName: "DesertLands"
+        x: 651
+        y: 76
+        z: 1134
+      6: 
+        worldName: "DesertLands"
+        x: 664
+        y: 76
+        z: 1121
+      7: 
+        worldName: "DesertLands"
+        x: 679
+        y: 76
+        z: 1120
+      8: 
+        worldName: "DesertLands"
+        x: 694
+        y: 76
+        z: 1121
+      9: 
+        worldName: "DesertLands"
+        x: 707
+        y: 76
+        z: 1134
+      10: 
+        worldName: "DesertLands"
+        x: 708
+        y: 76
+        z: 1149
+      11: 
+        worldName: "DesertLands"
+        x: 707
+        y: 76
+        z: 1164
+      12: 
+        worldName: "DesertLands"
+        x: 694
+        y: 76
+        z: 1177
