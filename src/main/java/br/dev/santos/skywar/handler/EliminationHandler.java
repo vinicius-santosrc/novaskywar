@@ -37,14 +37,25 @@ public class EliminationHandler {
             if (entityDamageEvent.getDamager() instanceof Player) {
                 Player killer = (Player) entityDamageEvent.getDamager();
                 PlayerData killerData = this.playerManager.get(killer);
-
                 killerData.addCredits("eliminar {X} jogador", 8);
+                
+                if (!killerData.getArena().firstBlood) {
+                    killerData.getArena().firstBlood = true;
+                    killerData.addCredits("dar o First Blood", 12);
+                    deathMessage = config.getString("messages.first_blood_message")
+                            .replace("{player}", playerDeadEntity.getDisplayName())
+                            .replace("{killer}", killer.getDisplayName())
+                            .replace("{X}", String.valueOf(arena.alivePlayers.size()))
+                            .replace("{Y}", String.valueOf(arena.maxPlayers));
+                }
+                else {
+                    this.deathMessage = config.getString("messages.player_killed_oponent")
+                            .replace("{player}", playerDeadEntity.getDisplayName())
+                            .replace("{killer}", killer.getDisplayName())
+                            .replace("{X}", String.valueOf(arena.alivePlayers.size()))
+                            .replace("{Y}", String.valueOf(arena.maxPlayers));
+                }
 
-                this.deathMessage = config.getString("messages.player_killed_oponent")
-                        .replace("{player}", playerDeadEntity.getDisplayName())
-                        .replace("{killer}", killer.getDisplayName())
-                        .replace("{X}", String.valueOf(arena.alivePlayers.size()))
-                        .replace("{Y}", String.valueOf(arena.maxPlayers));
 
                 if (killerData.getKit() instanceof Assassino) {
                     killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 1));

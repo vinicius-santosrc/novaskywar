@@ -42,12 +42,16 @@ messages:
   money_player: "§aVocê tem {money} créditos"
 
   help:
-    - "§6----- §3[SkyWar] §6-----"
-    - "§6/skywar create <mapa> <nomemundo> <maxplayers> <minplayers> - §fCriação de mapas"
+    - "§6--------- §3[NovaSkywar] §6---------"
+    - "§6/skywar create <nomemapa> <maxplayers> - §fCriação de mapas"
+    - "§6/skywar set <island/spectator/waitingLobby> <numeroIlha> - §fSeta o determinado local como tipo island/spectator/waitinglobby"
     - "§6/skywar remove <mapa> - §fRemoção de mapas"
-    - "§6/skywar start - §fForça o início da partida atual"
+    - "§6/skywar start <mapa> <sala> - §fForça o início da partida atual"
+    - "§6/start - §fForça o início da partida atual"
+    - "§6/skywar kit <nomeDoKit> - §fSeleciona o kit digitado"
+    - "§6/skywar kit remove - - §fRemove o kit atual"
     - "§6/skywar help - §fAjuda com o plugin"
-    - "------------------"
+    - "§6------------------------------------"
 lobby:
   worldName: "LobbySW2"
   x: 4010
@@ -72,6 +76,18 @@ arenas:
         x: 143
         y: 119
         z: -238
+
+    feast:
+      pos1:
+        worldName: PixelLands
+        x: 134
+        y: 90
+        z: -232
+      pos2:
+        worldName: PixelLands
+        x: 150
+        y: 117
+        z: -245
 
     islands:
       1: 
@@ -153,6 +169,18 @@ arenas:
         x: -118
         y: 11
         z: -523
+      
+    feast:
+      pos1:
+        worldName: SkyLands
+        x: -106
+        y: -1
+        z: -537
+      pos2:
+        worldName: SkyLands
+        x: -132
+        y: 17
+        z: -511
 
     islands:
       1: 
@@ -255,6 +283,18 @@ arenas:
         y: 84
         z: 1149
 
+    feast:
+      pos1:
+        worldName: "DesertLands"
+        x: 689
+        y: 70
+        z: 1159
+      pos2:
+        worldName: "DesertLands"
+        x: 669
+        y: 85
+        z: 1138
+          
     islands:
       1: 
         worldName: "DesertLands"

@@ -42,12 +42,16 @@ messages:
   money_player: "§aVocê tem {money} créditos"
 
   help:
-    - "§6----- §3[SkyWar] §6-----"
-    - "§6/skywar create <mapa> <nomemundo> <maxplayers> <minplayers> - §fCriação de mapas"
+    - "§6--------- §3[NovaSkywar] §6---------"
+    - "§6/skywar create <nomemapa> <maxplayers> - §fCriação de mapas"
+    - "§6/skywar set <island/spectator/waitingLobby> <numeroIlha> - §fSeta o determinado local como tipo island/spectator/waitinglobby"
     - "§6/skywar remove <mapa> - §fRemoção de mapas"
-    - "§6/skywar start - §fForça o início da partida atual"
+    - "§6/skywar start <mapa> <sala> - §fForça o início da partida atual"
+    - "§6/start - §fForça o início da partida atual"
+    - "§6/skywar kit <nomeDoKit> - §fSeleciona o kit digitado"
+    - "§6/skywar kit remove - - §fRemove o kit atual"
     - "§6/skywar help - §fAjuda com o plugin"
-    - "------------------"
+    - "§6------------------------------------"
 lobby:
   worldName: "LobbySW2"
   x: 4010
@@ -67,21 +71,85 @@ arenas:
         x: -745
         y: 51
         z: -1238
-      winner: "PixelLands-winner"
+      winner:
+        worldName: "PixelLands"
+        x: 143
+        y: 119
+        z: -238
+
+    feast:
+      pos1:
+        worldName: "PixelLands"
+        x: 0
+        y: 0
+        z: 0
+      pos2:
+        worldName: "PixelLands"
+        x: 0
+        y: 0
+        z: 0
 
     islands:
-      1: "PixelLands-1"
-      2: "PixelLands-2"
-      3: "PixelLands-3"
-      4: "PixelLands-4"
-      5: "PixelLands-5"
-      6: "PixelLands-6"
-      7: "PixelLands-7"
-      8: "PixelLands-8"
-      9: "PixelLands-9"
-      10: "PixelLands-10"
-      11: "PixelLands-11"
-      12: "PixelLands-12"
+      1: 
+        worldName: "PixelLands"
+        x: 143
+        y: 104
+        z: -205
+      2: 
+        worldName: "PixelLands"
+        x: 159
+        y: 104
+        z: -209
+      3: 
+        worldName: "PixelLands"
+        x: 171
+        y: 104
+        z: -221
+      4: 
+        worldName: "PixelLands"
+        x: 176
+        y: 104
+        z: -238
+      5: 
+        worldName: "PixelLands"
+        x: 172
+        y: 104
+        z: -256
+      6: 
+        worldName: "PixelLands"
+        x: 159
+        y: 104
+        z: -267
+      7: 
+        worldName: "PixelLands"
+        x: 143
+        y: 104
+        z: -273
+      8: 
+        worldName: "PixelLands"
+        x: 125
+        y: 104
+        z: -267
+      9: 
+        worldName: "PixelLands"
+        x: 114
+        y: 104
+        z: -256
+      10: 
+        worldName: "PixelLands"
+        x: 108
+        y: 104
+        z: -238
+      11: 
+        worldName: "PixelLands"
+        x: 114
+        y: 104
+        z: -222
+      12: 
+        worldName: "PixelLands"
+        x: 125
+        y: 104
+        z: -209
 
   SkyLands:
     enabled: true
@@ -96,25 +164,105 @@ arenas:
         x: -745
         y: 51
         z: -1238
-      winner: "SkyLands-winner"
+      winner: 
+        worldName: "SkyLands"
+        x: -118
+        y: 11
+        z: -523
+      
+    feast:
+      pos1:
+        worldName: "SkyLands"
+        x: 0
+        y: 0
+        z: 0
+      pos2:
+        worldName: "SkyLands"
+        x: 0
+        y: 0
+        z: 0
 
     islands:
-      1: "SkyLands-1"
-      2: "SkyLands-2"
-      3: "SkyLands-3"
-      4: "SkyLands-4"
-      5: "SkyLands-5"
-      6: "SkyLands-6"
-      7: "SkyLands-7"
-      8: "SkyLands-8"
-      9: "SkyLands-9"
-      10: "SkyLands-10"
-      11: "SkyLands-11"
-      12: "SkyLands-12"
-      13: "SkyLands-13"
-      14: "SkyLands-14"
-      15: "SkyLands-15"
-      16: "SkyLands-16"
+      1: 
+        worldName: "SkyLands"
+        x: -95
+        y: 7
+        z: -428
+      2: 
+        worldName: "SkyLands"
+        x: -141
+        y: 7
+        z: -428
+      3: 
+        worldName: "SkyLands"
+        x: -180
+        y: 7
+        z: -439
+      4: 
+        worldName: "SkyLands"
+        x: -202
+        y: 7
+        z: -461
+      5: 
+        worldName: "SkyLands"
+        x: -213
+        y: 7
+        z: -500
+      6: 
+        worldName: "SkyLands"
+        x: -213
+        y: 7
+        z: -546
+      7: 
+        worldName: "SkyLands"
+        x: -202
+        y: 7
+        z: -585
+      8: 
+        worldName: "SkyLands"
+        x: -180
+        y: 7
+        z: -609
+      9: 
+        worldName: "SkyLands"
+        x: -141
+        y: 7
+        z: -620
+      10:
+        worldName: "SkyLands"
+        x: -95
+        y: 7
+        z: -620
+      11: 
+        worldName: "SkyLands"
+        x: -57
+        y: 7
+        z: -609
+      12: 
+        worldName: "SkyLands"
+        x: -34
+        y: 7
+        z: -585
+      13: 
+        worldName: "SkyLands"
+        x: -23
+        y: 7
+        z: -546
+      14: 
+        worldName: "SkyLands"
+        x: -23
+        y: 7
+        z: -500
+      15: 
+        worldName: "SkyLands"
+        x: -34
+        y: 7
+        z: -461
+      16: 
+        worldName: "SkyLands"
+        x: -56
+        y: 7
+        z: -439
 
   DesertLands:
     enabled: true
@@ -135,6 +283,18 @@ arenas:
         y: 84
         z: 1149
 
+    feast:
+      pos1:
+        worldName: "DesertLands"
+        x: 689
+        y: 70
+        z: 1159
+      pos2:
+        worldName: "DesertLands"
+        x: 669
+        y: 85
+        z: 1138
+          
     islands:
       1: 
         worldName: "DesertLands"

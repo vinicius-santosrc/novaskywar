@@ -10,7 +10,7 @@ import br.dev.santos.skywar.warp.WarpManager.Coord;
 public abstract class TeleportUtils {
     public static Coord getWaitingLobby(Arena arena) {
         ConfigurationSection waitingLobbyConfiguration = arena.getArenaConfig()
-                .getConfigurationSection(".warps.waiting");
+        .getConfigurationSection(".warps.waiting");
         String waitingLobbyWorld = waitingLobbyConfiguration.getString("worldName");
         int waitingX = waitingLobbyConfiguration.getInt("x");
         int waitingY = waitingLobbyConfiguration.getInt("y");

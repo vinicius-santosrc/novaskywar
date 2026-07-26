@@ -75,7 +75,12 @@ public class EndGameTask extends BukkitRunnable {
             exception.printStackTrace();
         }
         finally {
-            arena.setStatus(StatusArena.OPEN);
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    arena.setStatus(StatusArena.OPEN);
+                }
+            }.runTaskLater(Bukkit.getPluginManager().getPlugins()[0], 200L);
         }
     }
 }

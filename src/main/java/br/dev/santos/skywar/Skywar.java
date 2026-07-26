@@ -3,7 +3,6 @@ package br.dev.santos.skywar;
 import java.io.File;
 import java.util.List;
 
-import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;
@@ -150,11 +149,6 @@ public final class Skywar extends JavaPlugin {
                 this.fireWorksTask,
                 this.playerGameService);
 
-        if (this.gameManager == null) {
-            throw new IllegalStateException(
-                    "GameManager não foi inicializado.");
-        }
-
         this.arenaLoader = new ArenaLoader(this.getConfig(), this.arenaManager);
         this.arenaLoader.loadArenas();
     }
@@ -207,101 +201,110 @@ public final class Skywar extends JavaPlugin {
             String label,
             String[] args) {
 
-        if (!command.getName().equalsIgnoreCase("skywar")) {
-            return true;
-        }
-
-        if (!(sender instanceof Player)) {
-            sender.sendMessage(
-                    "Este comando só pode ser usado por jogadores.");
-            return true;
-        }
-
         Player player = (Player) sender;
-
-        if (args.length == 0) {
-            sendMessageToPlayer(
-                    player,
-                    "messages.incorrect_usage");
-            return true;
-        }
-
         String subCommand = args[0];
 
-        if (subCommand.equalsIgnoreCase("help")) {
-            sendHelp(player);
-            return true;
-        }
+        switch (subCommand.toLowerCase()) {
+            case "help":
+                sendHelp(player);
+                return true;
 
-        if (subCommand.equalsIgnoreCase("entrar")) {
-            this.handleJoinCommand(player, args);
-            return true;
-        }
+            case "entrar":
+                this.handleJoinCommand(player, args);
+                return true;
 
-        if (subCommand.equalsIgnoreCase("creditos")) {
-            int money = this.moneyManager.getMoney(player);
+            case "creditos":
+                int money = this.moneyManager.getMoney(player);
 
-            sendMessageToPlayer(
-                    player,
-                    "messages.money_player",
-                    "{money}",
-                    String.valueOf(money));
-
-            return true;
-        }
-
-        if (subCommand.equalsIgnoreCase("sair")) {
-            this.gameManager.leaveGame(player);
-            return true;
-        }
-
-        if (subCommand.equalsIgnoreCase("comprar")) {
-            if (args.length > 1) {
-                this.kitShopService.buyNewKit(
+                sendMessageToPlayer(
                         player,
-                        args[1]);
-            }
+                        "messages.money_player",
+                        "{money}",
+                        String.valueOf(money));
 
-            return true;
+                return true;
+
+            case "sair":
+                this.gameManager.leaveGame(player);
+                return true;
+
+            case "comprar":
+                if (args.length > 1) {
+                    this.kitShopService.buyNewKit(
+                            player,
+                            args[1]);
+                }
+
+                return true;
+
+            case "start":
+                if (args.length > 1) {
+                    Arena arena = this.arenaManager.getArena(args[1], "1");
+                    this.gameManager.forceStart(arena);
+                }
+
+                return true;
+
+            case "reload":
+                this.reloadConfig();
+
+                sendMessageToPlayer(
+                        player,
+                        "messages.config_reloaded");
+
+                return true;
+
+            case "kit":
+                handleKitCommand(player, args);
+                return true;
+
+            case "create":
+                this.getArenaManager().createArena(
+                        player,
+                        args[1],
+                        player.getWorld().getName(),
+                        Integer.parseInt(args[2]),
+                        getConfig());
+
+                this.saveConfig();
+                return true;
+
+            case "remove":
+                boolean result = this.getArenaManager().removeArena(
+                        player,
+                        args[1],
+                        getConfig());
+
+                this.saveConfig();
+                return result;
+
+            case "set":
+                if (!this.arenaManager.exists(args[1], "1")) {
+                    player.sendMessage("§cA arena " + args[1] + " não existe.");
+                    return false;
+                }
+
+                Arena arenaSelected = this.arenaManager.getArena(args[1], "1");
+
+                String arg2 = args.length > 3 ? args[3] : "";
+
+                this.getArenaManager().handleEditArena(
+                        arenaSelected,
+                        player,
+                        args[2],
+                        arg2,
+                        getConfig());
+
+                this.saveConfig();
+                return true;
+
+            default:
+                sendMessageToPlayer(
+                        player,
+                        "messages.unknown_command");
+
+                return true;
         }
-
-        if (command.getName().equalsIgnoreCase("start")) {
-            PlayerData playerData = this.playerManager.get(player);
-            Arena arena = playerData.getArena();
-            this.gameManager.forceStart(arena);
-
-            return true;
-        }
-
-        if (subCommand.equalsIgnoreCase("start")) {
-            if (args.length > 1) {
-                Arena arena = this.arenaManager.getArena(args[1], "1");
-                this.gameManager.forceStart(arena);
-            }
-
-            return true;
-        }
-
-        if (subCommand.equalsIgnoreCase("reload")) {
-            reloadConfig();
-
-            sendMessageToPlayer(
-                    player,
-                    "messages.config_reloaded");
-
-            return true;
-        }
-
-        if (subCommand.equalsIgnoreCase("kit")) {
-            handleKitCommand(player, args);
-            return true;
-        }
-
-        sendMessageToPlayer(
-                player,
-                "messages.unknown_command");
-
-        return true;
     }
 
     private void handleJoinCommand(Player player, String[] args) {

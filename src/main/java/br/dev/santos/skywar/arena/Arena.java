@@ -34,25 +34,29 @@ public class Arena {
     private int timeToStart;
     public int timeOfTheMatch;
     private ArrayList<PlayerData> players = new ArrayList<PlayerData>();
+    public boolean firstBlood = false;
+    public boolean feastReached = false;
 
     private FileConfiguration arenaConfig;
+    private final ArenaMessenger arenaMessenger;
 
     private StartCountdownTask countdownTask;
 
     PlayerManager playerManager;
 
     public Arena(String name, String nameOfTheWorld, int maxPlayers, int minPlayers, int pvpOffTime,
-            FileConfiguration config) {
+            FileConfiguration config, ArenaMessenger arenaMessenger) {
         this.name = name;
         this.nameOfTheWorld = nameOfTheWorld;
         this.maxPlayers = maxPlayers;
         this.minPlayers = minPlayers;
         this.pvpOffTime = pvpOffTime;
         this.arenaConfig = config;
+        this.arenaMessenger = arenaMessenger;
     }
     
     public ConfigurationSection getArenaConfig() {
-        return this.arenaConfig.getConfigurationSection("arenas." + this.nameOfTheWorld);
+        return this.arenaConfig.getConfigurationSection("arenas." + this.name);
     }
 
     public StartCountdownTask getCountdownTask() {
@@ -123,6 +127,10 @@ public class Arena {
             return this.status == StatusArena.VIP;
         }
         return this.status == StatusArena.OPEN;
+    }
+
+    public void sendMessageToArena(String message) {
+        this.arenaMessenger.sendMessageToArena(this, message);
     }
 
     public static enum StatusArena {

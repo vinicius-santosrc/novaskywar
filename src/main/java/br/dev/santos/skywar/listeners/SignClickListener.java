@@ -81,6 +81,10 @@ public final class SignClickListener implements Listener {
 
         Arena arena = arenaManager.getArena(mapName, numberRoom);
 
+        if (!this.isSkyWarSign(sign.getLine(0))) {
+            return;   
+        }
+
         if (arena == null) {
             event.getPlayer().sendMessage("§cEssa arena não existe mais.");
             return;
@@ -94,8 +98,10 @@ public final class SignClickListener implements Listener {
         Player player = event.getPlayer();
 
         switch (arena.getStatus()) {
-            case FINISHING:
             case RESETING:
+                event.getPlayer().sendMessage("§cEssa arena já está em andamento.");
+                break;
+            case FINISHING:
             case STARTED:
                 event.getPlayer().sendMessage("§cEssa arena já está em andamento.");
                 break;
@@ -106,6 +112,22 @@ public final class SignClickListener implements Listener {
                 player.performCommand("skywar entrar " + mapName + " " + numberRoom);
                 break;
         }
+    }
+
+    private boolean isSkyWarSign(String firstLine) {
+        switch (firstLine) {
+            case "§a§l[Aberta]":
+            case "§6§l[VIP]":
+            case "§5§l[Em Jogo]":
+            case "§5§l[Finalizando]":
+            case "§4§l[Resetando]":
+            case "§c§l[Fechada]":
+            case "§c§l[Inválida]":
+                return true;
+            default:
+                break;
+        }
+        return false;
     }
 
     public static void updateSign(Sign sign, ArenaManager arenaManager) {

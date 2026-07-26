@@ -57,17 +57,16 @@ public final class PlayerDeathListener implements Listener {
         if (playerData != null && playerData.getKit() instanceof VidaExtra && !playerData.getHasUsedExtraLife()) {
             return;
         }
+        
+        if (playerData != null && playerData.getStatus() == PlayerState.PLAYING && playerData.getArena() != null) {
+            String message = config.getString("messages.deathmessage");
+            player.sendMessage(message);
+            
+            // Setando nome para vermelho
+            player.setPlayerListName(ChatColor.RED + player.getName());
+            player.setCustomName(ChatColor.RED + player.getName());
+            player.setCustomNameVisible(true);
 
-        // Enviando mensagem de morte (acesse o inventário para teleporte...)
-        String message = config.getString("messages.deathmessage");
-        player.sendMessage(message);
-
-        // Setando nome para vermelho
-        player.setPlayerListName(ChatColor.RED + player.getName());
-        player.setCustomName(ChatColor.RED + player.getName());
-        player.setCustomNameVisible(true);
-
-        if (playerData != null) {
             playerData.setDead(true);
             playerData.setKit(null);
             playerData.setHasUsedExtraLife(false);
@@ -82,8 +81,9 @@ public final class PlayerDeathListener implements Listener {
             Coord winnerPlace = TeleportUtils.getWinnerPlace(arena);
             this.warpManager.teleport(playerData.getPlayerEntity(), winnerPlace);
             this.playerGameService.prepareForSpectator(playerData);
+            
+            this.eliminationHandler.handle(playerData.getArena(), playerData);
         }
 
-        this.eliminationHandler.handle(playerData.getArena(), playerData);
     }
 }
