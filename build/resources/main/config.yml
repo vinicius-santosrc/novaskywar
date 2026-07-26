@@ -77,6 +77,18 @@ arenas:
         y: 119
         z: -238
 
+    feast:
+      pos1:
+        worldName: "PixelLands"
+        x: 0
+        y: 0
+        z: 0
+      pos2:
+        worldName: "PixelLands"
+        x: 0
+        y: 0
+        z: 0
+
     islands:
       1: 
         worldName: "PixelLands"
@@ -157,6 +169,18 @@ arenas:
         x: -118
         y: 11
         z: -523
+      
+    feast:
+      pos1:
+        worldName: "SkyLands"
+        x: 0
+        y: 0
+        z: 0
+      pos2:
+        worldName: "SkyLands"
+        x: 0
+        y: 0
+        z: 0
 
     islands:
       1: 
@@ -259,6 +283,18 @@ arenas:
         y: 84
         z: 1149
 
+    feast:
+      pos1:
+        worldName: "DesertLands"
+        x: 689
+        y: 70
+        z: 1159
+      pos2:
+        worldName: "DesertLands"
+        x: 669
+        y: 85
+        z: 1138
+          
     islands:
       1: 
         worldName: "DesertLands"

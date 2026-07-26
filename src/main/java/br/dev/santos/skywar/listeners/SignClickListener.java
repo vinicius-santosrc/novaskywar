@@ -98,8 +98,10 @@ public final class SignClickListener implements Listener {
         Player player = event.getPlayer();
 
         switch (arena.getStatus()) {
-            case FINISHING:
             case RESETING:
+                event.getPlayer().sendMessage("§cEssa arena já está em andamento.");
+                break;
+            case FINISHING:
             case STARTED:
                 event.getPlayer().sendMessage("§cEssa arena já está em andamento.");
                 break;

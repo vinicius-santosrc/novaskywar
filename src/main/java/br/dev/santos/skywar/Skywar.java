@@ -3,7 +3,6 @@ package br.dev.santos.skywar;
 import java.io.File;
 import java.util.List;
 
-import org.bukkit.GameMode;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.PluginCommand;

@@ -4,7 +4,6 @@ import java.util.ArrayList;
 
 import org.bukkit.ChatColor;
 import org.bukkit.GameMode;
-import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 
@@ -108,8 +107,8 @@ public class PlayerGameService {
     }
 
     public void resetPlayerAfterGame(Arena arena) {
+        arena.firstBlood = false;
         for (PlayerData playerData : new ArrayList<PlayerData>(arena.getPlayers())) {
-
             this.preparePlayerForLobby(
                     playerData,
                     true);

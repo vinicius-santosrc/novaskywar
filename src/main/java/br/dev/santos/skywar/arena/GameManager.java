@@ -154,20 +154,27 @@ public class GameManager {
 
         public void startGame(Arena arena) {
                 arena.setStatus(StatusArena.STARTED);
+                arena.feastReached = false;
 
                 // Mensagem para a arena que indica que o Jogo começou
                 this.sendStartGameMessages(arena);
                 this.playerGameService.preparePlayersForGame(arena);
 
                 // Task para monitorar o pvp
-                new PvPEnableTask(arena, this.arenaMessenger, this.scoreBoardManager, getConfig())
+                new PvPEnableTask(
+                                arena,
+                                this.arenaMessenger,
+                                this.scoreBoardManager,
+                                getConfig())
                                 .runTaskTimer(plugin, 20L, 20L);
 
                 // Task para monitorar partida
-                new MatchMonitorTask(this, arena, this.scoreBoardManager)
+                new MatchMonitorTask(
+                                this,
+                                arena,
+                                this.scoreBoardManager)
                                 .runTaskTimer(plugin, 20L, 20L);
-
-        };
+        }
 
         public void endGame(Arena arena) {
                 PlayerData playerWinner = arena.getWinner();

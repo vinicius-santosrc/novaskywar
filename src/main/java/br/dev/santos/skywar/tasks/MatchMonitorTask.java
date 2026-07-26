@@ -4,7 +4,9 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import br.dev.santos.skywar.arena.Arena;
 import br.dev.santos.skywar.arena.GameManager;
+import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.scoreboard.ScoreBoardManager;
+import br.dev.santos.skywar.utils.FeastUtils;
 
 public class MatchMonitorTask extends BukkitRunnable {
 
@@ -28,6 +30,15 @@ public class MatchMonitorTask extends BukkitRunnable {
         arena.timeOfTheMatch++;
 
         scoreBoardManager.updateScoreBoard(arena);
+
+        for (PlayerData playerData : arena.getPlayers()) {
+            if (FeastUtils.handlePlayerEnteringFeast(
+                    playerData,
+                    arena)) {
+
+                break;
+            }
+        }
 
         if (arena.alivePlayers.size() <= 1) {
             cancel();

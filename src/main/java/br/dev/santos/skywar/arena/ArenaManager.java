@@ -9,11 +9,11 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class ArenaManager {
-    private final Map<String, Arena> arenas = new HashMap<>();
+        private final Map<String, Arena> arenas = new HashMap<>();
 
     public void addExistingArena(String name, String nameOfWorld, int maxPlayers, int minPlayers, int pvpOffTime,
             FileConfiguration arenaConfig) {
-        Arena arena = new Arena(name, nameOfWorld, maxPlayers, minPlayers, pvpOffTime, arenaConfig);
+        Arena arena = new Arena(name, nameOfWorld, maxPlayers, minPlayers, pvpOffTime, arenaConfig, new ArenaMessenger());
 
         arenas.put(arena.getName(), arena);
     }
@@ -35,6 +35,9 @@ public class ArenaManager {
         configuration.createSection(arenaPath + ".warps");
         configuration.createSection(arenaPath + ".warps.waiting");
         configuration.createSection(arenaPath + ".warps.winner");
+        configuration.createSection(arenaPath + ".feast");
+        configuration.createSection(arenaPath + ".feast.point1");
+        configuration.createSection(arenaPath + ".feast.point2");
         configuration.createSection(arenaPath + ".islands");
 
         Arena arena = new Arena(
@@ -43,7 +46,8 @@ public class ArenaManager {
                 maxPlayers,
                 maxPlayers / 2,
                 5,
-                configuration);
+                configuration,
+                new ArenaMessenger());
 
         arenas.put(arena.getName(), arena);
 
@@ -51,6 +55,7 @@ public class ArenaManager {
         player.sendMessage("§a  Utilize: /skywar set spectator");
         player.sendMessage("§a  Utilize: /skywar set island {numero}");
         player.sendMessage("§a  Utilize: /skywar set waitingLobby");
+        player.sendMessage("§a  Utilize: /skywar set feast <pos1/pos2>");
         player.sendMessage("§aApós isso, a arena estará disponível para jogo.");
     }
 
@@ -79,7 +84,7 @@ public class ArenaManager {
                         islandPath + ".z",
                         player.getLocation().getBlockZ());
 
-                player.sendMessage("§aLocalização da Ilha" + arg2 + "definida na arena " + arena.getName() + ".");
+                player.sendMessage("§aLocalização da Ilha " + arg2 + " definida na arena " + arena.getName() + ".");
                 break;
 
             case "spectator":
@@ -120,7 +125,29 @@ public class ArenaManager {
 
                 player.sendMessage("§aLocalização da sala de espera definida na arena " + arena.getName() + ".");
                 break;
+             case "feast":
+                if (!arg2.equalsIgnoreCase("pos1") && !arg2.equalsIgnoreCase("pos2")) {
+                        player.sendMessage("§cUtilize pos1 ou pos2 como definição para o feast.");
+                        break;
 
+                }
+                String feast = arenaPath + ".feast." + arg2;
+
+                configuration.set(
+                                feast + ".worldName",
+                                player.getWorld().getName());
+                configuration.set(
+                                feast + ".x",
+                                player.getLocation().getBlockX());
+                configuration.set(
+                                feast + ".y",
+                                player.getLocation().getBlockY());
+                configuration.set(
+                                feast + ".z",
+                                player.getLocation().getBlockZ());
+
+                player.sendMessage("§aLocalização " + arg2 + " do feast definida na arena " + arena.getName() + ".");
+                break;
             default:
                 player.sendMessage("§cDefinição não encontrada.");
                 break;
@@ -148,7 +175,7 @@ public class ArenaManager {
         }
         config.set("arenas." + name, null);
 
-        player.sendMessage("§aArena " + name + "removida com sucesso.");
+        player.sendMessage("§aArena " + name + " removida com sucesso.");
         return arenas.remove(name) != null;
     }
 

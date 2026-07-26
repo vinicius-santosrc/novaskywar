@@ -1,19 +1,23 @@
 package br.dev.santos.skywar.kit.ability.abilities;
 
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.scheduler.BukkitRunnable;
 
 import br.dev.santos.skywar.Skywar;
+import br.dev.santos.skywar.arena.Arena;
 import br.dev.santos.skywar.kit.ability.Ability;
 import br.dev.santos.skywar.kit.kits.Enderman;
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
+import br.dev.santos.skywar.utils.FeastUtils;
 import br.dev.santos.skywar.player.PlayerData.PlayerState;
 
 public class EndermanAbility extends Ability {
@@ -28,12 +32,22 @@ public class EndermanAbility extends Ability {
         if (event.getCause() == PlayerTeleportEvent.TeleportCause.ENDER_PEARL) {
             Skywar plugin = Skywar.getPlugin(Skywar.class);
             FileConfiguration config = plugin.getConfig();
-            
+
             Player player = event.getPlayer();
             PlayerData playerData = this.playerManager.get(player);
 
+            Arena arena = playerData.getArena();
+
             Location enderPearlLocation = event.getTo();
 
+            if (arena != null && FeastUtils.blockEnderPearlInsideFeast(enderPearlLocation, arena)) {
+
+                event.setCancelled(true);
+                player.sendMessage("§cVocê não pode jogar uma Enderpearl no feast!");
+                player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
+                player.updateInventory();
+                return;
+            }
             // Verifica se o kit é o Enderman
             if (playerData.getKit() instanceof Enderman) {
                 // Envia mensagem para o jogador será teleportado em 3 segundos
@@ -42,10 +56,12 @@ public class EndermanAbility extends Ability {
 
                 event.setCancelled(true);
 
-                // Da play no som da bigorna onde a enderpearl foi jogada 
-                enderPearlLocation.getWorld().playSound(enderPearlLocation, Sound.valueOf("ANVIL_LAND"), 1.0f, 1.0f);
+                enderPearlLocation.getWorld().playSound(
+                        enderPearlLocation,
+                        Sound.valueOf("ANVIL_LAND"),
+                        1.0f,
+                        1.0f);
 
-                // Teleporta o jogador após 60L(3 segundos) 15 blocos acima
                 new BukkitRunnable() {
                     @Override
                     public void run() {
