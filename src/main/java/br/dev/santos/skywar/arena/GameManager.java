@@ -197,15 +197,16 @@ public class GameManager {
         }
 
         private void checkCountdown(Arena arena) {
-                if (arena.getStatus() == StatusArena.STARTED || arena.getStatus() == StatusArena.FINISHING
+                if (arena.getStatus() == StatusArena.STARTED
+                                || arena.getStatus() == StatusArena.FINISHING
                                 || arena.getStatus() == StatusArena.RESETING) {
                         return;
                 }
-                // Caso tenha a quantidade minima de players
-                if (arena.getPlayers().size() >= arena.minPlayers) {
-                        if (arena.getTimeToStart() < 90) {
-                                return;
-                        }
+
+                // Caso tenha a quantidade minima de players, inicia o contador em 90 segundos
+                if (arena.getPlayers().size() >= arena.minPlayers
+                                && arena.getCountdownTask() == null) {
+
                         int timeToStart = 90;
                         arena.setTimeToStart(timeToStart);
 
@@ -216,40 +217,40 @@ public class GameManager {
                                         arena.getTimeToStart());
 
                         arena.setCountdownTask(task);
-
                         task.runTaskTimer(plugin, 0L, 20L);
                 }
 
-                // Caso a arena esteja lotada, reduz o tempo de inicio para 30
-                if (arena.getPlayers().size() == arena.maxPlayers && arena.getTimeToStart() > 30) {
-                        if (arena.getTimeToStart() < 30) {
-                                return;
+                // Caso a arena esteja lotada, reduz o contador atual para 30 segundos
+                if (arena.getPlayers().size() >= arena.maxPlayers
+                                && arena.getCountdownTask() != null) {
+
+                        StartCountdownTask countdown = arena.getCountdownTask();
+
+                        if (countdown.getTimeToStart() > 30) {
+                                countdown.setTimeToStart(30);
+
+                                arenaMessenger.sendMessageToArena(
+                                                arena,
+                                                this.getConfig().getString("messages.arenaFull"));
                         }
-                        int timeToStart = 30;
-                        arena.setTimeToStart(timeToStart);
-
-                        StartCountdownTask task = new StartCountdownTask(
-                                        this,
-                                        arena,
-                                        this.arenaMessenger,
-                                        arena.getTimeToStart());
-
-                        arena.setCountdownTask(task);
-                        arenaMessenger.sendMessageToArena(arena, this.getConfig().getString("messages.arenaFull"));
                 }
 
-                // Stop CountdownTask pois está menor que o minimo de players
+                // Para o contador caso fique abaixo da quantidade minima de players
                 if (arena.getPlayers().size() < arena.minPlayers) {
                         int timeToStart = 90;
                         arena.setTimeToStart(timeToStart);
+
                         if (arena.getCountdownTask() != null) {
                                 arena.getCountdownTask().cancel();
-                                for(PlayerData playerDataArena : arena.getPlayers()) {
+                                arena.setCountdownTask(null);
+
+                                for (PlayerData playerDataArena : arena.getPlayers()) {
                                         playerDataArena.getPlayerEntity().setLevel(0);
                                         playerDataArena.getPlayerEntity().setTotalExperience(0);
                                         playerDataArena.getPlayerEntity().setExp(0);
                                 }
                         }
+
                         arena.setStatus(StatusArena.OPEN);
                 }
 
@@ -257,6 +258,7 @@ public class GameManager {
                 if (arena.getPlayers().size() >= (arena.maxPlayers - 2)) {
                         arena.setStatus(StatusArena.VIP);
                 }
+
                 if (arena.getPlayers().size() < (arena.maxPlayers - 2)) {
                         arena.setStatus(StatusArena.OPEN);
                 }

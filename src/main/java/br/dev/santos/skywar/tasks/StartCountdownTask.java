@@ -28,6 +28,15 @@ public final class StartCountdownTask extends BukkitRunnable {
         this.timeToStart = seconds;
     }
 
+    public int getTimeToStart() {
+        return timeToStart;
+    }
+
+    public void setTimeToStart(int timeToStart) {
+        this.timeToStart = timeToStart;
+        this.arena.setTimeToStart(timeToStart);
+    }
+
     // Loop a cada segundo
     @Override
     public void run() {
