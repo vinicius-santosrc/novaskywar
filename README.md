@@ -1,6 +1,6 @@
 ![image](https://i.ytimg.com/vi/GXyygEf0DlM/maxresdefault.jpg)
 
-# 🚀 NovaSkyWar 2.3.7
+# 🚀 NovaSkyWar
 
 O **NovaSkyWar** é um plugin Open Source do minigame **SkyWar** para **Minecraft 1.8.x**, desenvolvido em **Java** utilizando **Maven**.
 
