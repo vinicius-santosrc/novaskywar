@@ -8,11 +8,20 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
 import br.dev.santos.skywar.arena.Arena;
+import br.dev.santos.skywar.economy.MoneyManager;
+import br.dev.santos.skywar.kit.menu.KitUserManager;
 import br.dev.santos.skywar.player.PlayerData.PlayerState;
 
 public final class PlayerManager {
 
     private final List<PlayerData> players = new ArrayList<>();
+    private final MoneyManager moneyManager;
+    private final KitUserManager kitUserManager;
+
+    public PlayerManager(MoneyManager moneyManager, KitUserManager kitUserManager) {
+        this.moneyManager = moneyManager;
+        this.kitUserManager = kitUserManager;
+    }
 
     public PlayerData get(Player player) {
         for (PlayerData data : players) {
@@ -31,7 +40,7 @@ public final class PlayerManager {
             return existing;
         }
 
-        PlayerData created = new PlayerData(player.getDisplayName(), player.getUniqueId(), player);
+        PlayerData created = new PlayerData(player.getDisplayName(), player.getUniqueId(), player, this.moneyManager, this.kitUserManager);
         players.add(created);
         return created;
     }

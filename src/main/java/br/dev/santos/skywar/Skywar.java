@@ -26,6 +26,9 @@ import br.dev.santos.skywar.kit.KitManager;
 import br.dev.santos.skywar.kit.KitSelectionService;
 import br.dev.santos.skywar.kit.KitShopService;
 import br.dev.santos.skywar.kit.ability.AbilityManager;
+import br.dev.santos.skywar.kit.menu.KitUserManager;
+import br.dev.santos.skywar.kit.menu.MenuManager;
+import br.dev.santos.skywar.listeners.MenuListener;
 import br.dev.santos.skywar.listeners.PlayerConnectionListener;
 import br.dev.santos.skywar.listeners.PlayerDeathListener;
 import br.dev.santos.skywar.listeners.SignClickListener;
@@ -54,6 +57,9 @@ public final class Skywar extends JavaPlugin {
     private MoneyManager moneyManager;
     private KitManager kitManager;
     private KitShopService kitShopService;
+    private KitUserManager kitUserManager;
+
+    private MenuManager menuManager;
 
     private AbilityManager abilityManager;
 
@@ -76,7 +82,6 @@ public final class Skywar extends JavaPlugin {
 
         createFolders();
         createManagers();
-        registerKitsAndAbilities();
         registerListeners();
         registerCommands();
         startTasks();
@@ -98,22 +103,23 @@ public final class Skywar extends JavaPlugin {
     }
 
     private void createManagers() {
-        this.playerManager = new PlayerManager();
-        this.scoreBoardManager = new ScoreBoardManager();
-
         this.arenaMessenger = new ArenaMessenger();
+        this.scoreBoardManager = new ScoreBoardManager();
         this.warpManager = new WarpManager(this.getConfig());
+        this.moneyManager = new MoneyManager(this);
+
+        this.kitManager = new KitManager(
+                this.warpManager,
+                this.arenaMessenger);
+
+        this.kitUserManager = new KitUserManager(this, this.kitManager);
+        this.playerManager = new PlayerManager(this.moneyManager, this.kitUserManager);
 
         this.eliminationHandler = new EliminationHandler(
                 this.arenaMessenger,
                 this.playerManager);
 
-        this.moneyManager = new MoneyManager(this);
-
-        this.kitManager = new KitManager(
-                this.playerManager,
-                this.warpManager,
-                this.arenaMessenger);
+        this.kitManager.setPlayerManager(this.playerManager);
 
         this.abilityManager = new AbilityManager(
                 this,
@@ -149,21 +155,23 @@ public final class Skywar extends JavaPlugin {
                 this.fireWorksTask,
                 this.playerGameService);
 
+        this.menuManager = new MenuManager(this.kitManager, this.playerManager);
+
         this.arenaLoader = new ArenaLoader(this.getConfig(), this.arenaManager);
         this.arenaLoader.loadArenas();
-    }
-
-    private void registerKitsAndAbilities() {
-        this.kitManager.registerDefaults();
     }
 
     private void registerListeners() {
         PluginManager pluginManager = getServer().getPluginManager();
 
         pluginManager.registerEvents(new SignClickListener(this.arenaManager), this);
-        pluginManager.registerEvents(new PlayerDeathListener(this.playerManager, this.eliminationHandler, this.abilityManager, this.warpManager, this.playerGameService, this.arenaMessenger), this);
-        pluginManager.registerEvents(new PlayerConnectionListener(this.playerManager, this.gameManager, this.arenaMessenger, this.playerGameService), this);
-        pluginManager.registerEvents(new WaitingLobbyListener(this.playerManager, this.warpManager), this);
+        pluginManager.registerEvents(new PlayerDeathListener(this.playerManager, this.eliminationHandler,
+                this.abilityManager, this.warpManager, this.playerGameService, this.arenaMessenger), this);
+        pluginManager.registerEvents(new PlayerConnectionListener(this.playerManager, this.gameManager,
+                this.arenaMessenger, this.playerGameService), this);
+        pluginManager.registerEvents(new WaitingLobbyListener(this.playerManager, this.warpManager, this.menuManager),
+                this);
+        pluginManager.registerEvents(new MenuListener(this.menuManager), this);
     }
 
     private void registerCommands() {

@@ -25,16 +25,38 @@ public final class KitShopService {
     public void buyNewKit(Player player, String kit) {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
-        String Credits = "1000";
 
         PlayerData playerData = this.playerManager.get(player);
+        Kit kitInstance = this.kitManager.get(kit);
+        final int playerCredits = playerData.getAllCredits();
 
         List<String> helpMessages = config.getStringList("messages.buy_new_kit");
 
+        if (kitInstance == null) {
+            player.sendMessage("§cEsse kit não existe");
+            return;
+        }
+
+        if (this.playerManager.get(player).getKits().containsKey(kit)) {
+            player.sendMessage("§cVocê já possui o kit " + kit + ".");
+            return;
+        }
+
+        if (playerCredits < kitInstance.getPrice()) {
+            player.sendMessage("§cVocê não possui créditos suficientes para adquirir esse kit.");
+            return;
+        }
+
+        // Compra efetuada com sucesso.
+
+        playerData.removeCredits(kitInstance.getPrice());
+        playerData.addKit(kitInstance);
+        
         for (String message : helpMessages) {
             player.sendMessage(message
                     .replace("{kit}", kit)
-                    .replace("{credits}", Credits));
+                    .replace("{credits}", String.valueOf(kitInstance.getPrice())));
         }
+
     }
 }

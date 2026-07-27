@@ -1,14 +1,6 @@
-/**
- * 
- * NovaSkyWar Kit
- * Criado por Vinicius Santos em 21/07/2026.
- * Copyright (c) 2026 Vinicius Santos. Todos os direitos reservados.
- * Obs: Este código é parte do projeto NovaSkyWar e não deve ser distribuído sem autorização.
- * 
- * Essa classe registra e procura kits.
-*/
-
 package br.dev.santos.skywar.kit;
+
+import java.util.ArrayList;
 
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
@@ -45,24 +37,31 @@ import br.dev.santos.skywar.kit.kits.Zeus;
 import br.dev.santos.skywar.player.PlayerManager;
 import br.dev.santos.skywar.warp.WarpManager;
 
-import java.util.ArrayList;
-
 public class KitManager implements Listener {
 
-    // Array estático para armazenar os kits
-    private static ArrayList<Kit> kits = new ArrayList<Kit>();
-    private final PlayerManager playerManager;
+    private static final ArrayList<Kit> kits = new ArrayList<>();
+
+    private PlayerManager playerManager;
     private final WarpManager warpManager;
     private final ArenaMessenger arenaMessenger;
 
-    public KitManager(PlayerManager playerManager, WarpManager warpManager, ArenaMessenger arenaMessenger) {
-        registerDefaults();
-        this.playerManager = playerManager;
-        this.arenaMessenger = arenaMessenger;
+    public KitManager(
+            WarpManager warpManager,
+            ArenaMessenger arenaMessenger) {
+
         this.warpManager = warpManager;
+        this.arenaMessenger = arenaMessenger;
     }
 
-    //Método para dar do kit ao player
+    public void setPlayerManager(PlayerManager playerManager) {
+        this.playerManager = playerManager;
+
+        if (kits.isEmpty()) {
+            registerDefaults();
+        }
+    }
+
+    // Método para dar itens do kit ao player
     public void giveItemsToPlayer(Player player, Kit kitPlayer) {
         if (kitPlayer == null) {
             return;
@@ -83,7 +82,7 @@ public class KitManager implements Listener {
     }
 
     // Método para registrar os kits defaults
-    public void registerDefaults() {
+    private void registerDefaults() {
         register(new Apple());
         register(new Arqueiro());
         register(new Assassino());
@@ -106,7 +105,11 @@ public class KitManager implements Listener {
         register(new Sopa());
         register(new TheFlash());
         register(new Vampiro());
-        register(new VidaExtra(new VidaExtraAbility(this.playerManager, this.warpManager, this.arenaMessenger)));
+        register(new VidaExtra(
+                new VidaExtraAbility(
+                        this.playerManager,
+                        this.warpManager,
+                        this.arenaMessenger)));
         register(new Zeus());
     }
 

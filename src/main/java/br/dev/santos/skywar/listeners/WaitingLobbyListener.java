@@ -1,10 +1,10 @@
 package br.dev.santos.skywar.listeners;
 
-import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -16,6 +16,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import br.dev.santos.skywar.arena.Arena.StatusArena;
+import br.dev.santos.skywar.kit.menu.MenuManager;
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
 import br.dev.santos.skywar.utils.TeleportUtils;
@@ -27,13 +28,16 @@ public final class WaitingLobbyListener implements Listener {
 
     private final PlayerManager playerManager;
     private final WarpManager warpManager;
+    private final MenuManager menuManager;
 
     public WaitingLobbyListener(
             PlayerManager playerManager,
-            WarpManager warpManager) {
+            WarpManager warpManager,
+            MenuManager menuManager) {
 
         this.playerManager = playerManager;
         this.warpManager = warpManager;
+        this.menuManager = menuManager;
     }
 
     @EventHandler
@@ -75,6 +79,17 @@ public final class WaitingLobbyListener implements Listener {
             return;
         }
 
+        if (event.getAction() == Action.PHYSICAL) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (event.getClickedBlock() != null
+                && isBlockedInteraction(event.getClickedBlock().getType())) {
+            event.setCancelled(true);
+            return;
+        }
+
         ItemStack item = player.getItemInHand();
         if (item == null || item.getType() == Material.AIR)
             return;
@@ -88,9 +103,43 @@ public final class WaitingLobbyListener implements Listener {
         // Atribui comando para o báu
         // Atribui esmeralda para a loja
         if (meta.getDisplayName().equals("§6Seleção de KIT")) {
-            Bukkit.dispatchCommand(player, "chestcommands open swkits " + player.getDisplayName());
+            this.menuManager.openKitMenu(this.playerManager.get(player));
         } else if (meta.getDisplayName().equals("§2Loja")) {
-            Bukkit.dispatchCommand(player, "chestcommands open swloja " + player.getDisplayName());
+            this.menuManager.openShopMenu(this.playerManager.get(player));
+        }
+    }
+
+    private boolean isBlockedInteraction(Material material) {
+        switch (material) {
+            case CHEST:
+            case TRAPPED_CHEST:
+            case ENDER_CHEST:
+
+            case WOODEN_DOOR:
+            case IRON_DOOR_BLOCK:
+
+            case TRAP_DOOR:
+
+            case FENCE_GATE:
+
+            case WOOD_PLATE:
+            case STONE_PLATE:
+            case IRON_PLATE:
+            case GOLD_PLATE:
+
+            case LEVER:
+            case STONE_BUTTON:
+            case WOOD_BUTTON:
+
+            case DIODE_BLOCK_OFF:
+            case DIODE_BLOCK_ON:
+
+            case REDSTONE_COMPARATOR_OFF:
+            case REDSTONE_COMPARATOR_ON:
+                return true;
+
+            default:
+                return false;
         }
     }
 

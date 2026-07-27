@@ -7,7 +7,9 @@ import java.util.UUID;
 import org.bukkit.entity.Player;
 
 import br.dev.santos.skywar.arena.Arena;
+import br.dev.santos.skywar.economy.MoneyManager;
 import br.dev.santos.skywar.kit.Kit;
+import br.dev.santos.skywar.kit.menu.KitUserManager;
 
 public class PlayerData {
     private String name;
@@ -20,25 +22,61 @@ public class PlayerData {
     private boolean isDead = false;
     private int creditsEarn = 0;
     private Map<String, Integer> creditsEarnList = new HashMap<>();
-
+    private Map<String, Kit> kits = new HashMap<>();
+    private int allCredits = 0;
     private Boolean hasUsedExtraLife = false;
 
-    public PlayerData(String name, UUID uniqueId, Player playerEntity) {
+    private final MoneyManager moneyManager;
+    private final KitUserManager kitUserManager;
+
+
+    public PlayerData(
+            String name,
+            UUID uniqueId,
+            Player playerEntity,
+            MoneyManager moneyManager,
+            KitUserManager kitUserManager) {
+
         this.name = name;
         this.id = uniqueId;
         this.status = PlayerState.LOBBY;
         this.arena = null;
         this.playerEntity = playerEntity;
+
+        this.moneyManager = moneyManager;
+        this.kitUserManager = kitUserManager;
+
+        this.allCredits = this.getAllCredits();
     }
 
     public Map<String, Integer> getCreditsEarnList() {
         return this.creditsEarnList;
     }
 
+    public int getAllCredits() {
+        this.allCredits = this.moneyManager.getMoney(this.playerEntity);
+        return allCredits;
+    }
+
     public void addCredits(String name, Integer quantity) {
         this.creditsEarnList.put(name, quantity);
         this.creditsEarn += quantity;
+        this.moneyManager.addMoney(playerEntity, quantity);
         this.playerEntity.sendMessage("§6+" + quantity);
+    }
+
+    public void removeCredits(Integer quantity) {
+        this.moneyManager.removeMoney(playerEntity, quantity);
+    }
+
+    public Map<String, Kit> getKits() {
+        this.kits = this.kitUserManager.getAllByUser(this);
+        return this.kits;
+    }
+
+    public void addKit(Kit kit) {
+        this.kitUserManager.addKit(this, kit);
+        this.kits.put(kit.getName(), kit);
     }
 
     public UUID getUniqueId() {
