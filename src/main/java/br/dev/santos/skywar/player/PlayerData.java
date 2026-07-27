@@ -4,8 +4,10 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
 
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import br.dev.santos.skywar.Skywar;
 import br.dev.santos.skywar.arena.Arena;
 import br.dev.santos.skywar.economy.MoneyManager;
 import br.dev.santos.skywar.kit.Kit;
@@ -29,6 +31,7 @@ public class PlayerData {
     private final MoneyManager moneyManager;
     private final KitUserManager kitUserManager;
 
+    private FileConfiguration config;
 
     public PlayerData(
             String name,
@@ -47,6 +50,10 @@ public class PlayerData {
         this.kitUserManager = kitUserManager;
 
         this.allCredits = this.getAllCredits();
+
+        Skywar plugin = Skywar.getPlugin(Skywar.class);
+        FileConfiguration config = plugin.getConfig();
+        this.config = config;
     }
 
     public Map<String, Integer> getCreditsEarnList() {
@@ -62,7 +69,7 @@ public class PlayerData {
         this.creditsEarnList.put(name, quantity);
         this.creditsEarn += quantity;
         this.moneyManager.addMoney(playerEntity, quantity);
-        this.playerEntity.sendMessage("§6+" + quantity);
+        this.playerEntity.sendMessage(this.config.getString("messages.addCredits").replace("{quantity}", String.valueOf(quantity)));
     }
 
     public void removeCredits(Integer quantity) {

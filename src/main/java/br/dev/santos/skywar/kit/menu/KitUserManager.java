@@ -23,9 +23,7 @@ public class KitUserManager {
 
     public KitUserManager(JavaPlugin plugin, KitManager kitManager) {
         this.plugin = plugin;
-        this.userKitsFile = new File(
-                plugin.getDataFolder(),
-                "userKits.yml");
+        this.userKitsFile = new File(plugin.getDataFolder(),"userKits.yml");
 
         if (!this.userKitsFile.exists()) {
             plugin.saveResource("userKits.yml", false);
@@ -40,9 +38,7 @@ public class KitUserManager {
             PlayerData playerData,
             Kit kit) {
 
-        String path = "players."
-                + playerData.getPlayerEntity().getName();
-
+        String path = "players." + playerData.getPlayerEntity().getName();
         List<String> kits = this.kitConfig.getStringList(path);
 
         if (kits.contains(kit.getName())) {

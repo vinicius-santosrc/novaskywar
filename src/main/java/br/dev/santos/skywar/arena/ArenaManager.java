@@ -10,10 +10,15 @@ import org.bukkit.entity.Player;
 
 public class ArenaManager {
         private final Map<String, Arena> arenas = new HashMap<>();
+        private final ArenaMessenger messenger;
+
+        public ArenaManager(ArenaMessenger arenaMessenger) {
+                this.messenger = arenaMessenger;
+        }
 
     public void addExistingArena(String name, String nameOfWorld, int maxPlayers, int minPlayers, int pvpOffTime,
             FileConfiguration arenaConfig) {
-        Arena arena = new Arena(name, nameOfWorld, maxPlayers, minPlayers, pvpOffTime, arenaConfig, new ArenaMessenger());
+        Arena arena = new Arena(name, nameOfWorld, maxPlayers, minPlayers, pvpOffTime, arenaConfig, this.messenger);
 
         arenas.put(arena.getName(), arena);
     }
@@ -47,7 +52,7 @@ public class ArenaManager {
                 maxPlayers / 2,
                 5,
                 configuration,
-                new ArenaMessenger());
+                this.messenger);
 
         arenas.put(arena.getName(), arena);
 
@@ -103,8 +108,7 @@ public class ArenaManager {
                         winnerPath + ".z",
                         player.getLocation().getBlockZ());
 
-                player.sendMessage(
-                        "§aLocalização da posição do espectador/vencedor definida na arena " + arena.getName() + ".");
+                player.sendMessage("§aLocalização da posição do espectador/vencedor definida na arena " + arena.getName() + ".");
                 break;
 
             case "waitingLobby":
@@ -148,8 +152,26 @@ public class ArenaManager {
 
                 player.sendMessage("§aLocalização " + arg2 + " do feast definida na arena " + arena.getName() + ".");
                 break;
+        case "lobby":
+                String path = ".lobby";
+
+                configuration.set(
+                                path + ".worldName",
+                                player.getWorld().getName());
+                configuration.set(
+                                path + ".x",
+                                player.getLocation().getBlockX());
+                configuration.set(
+                                path + ".y",
+                                player.getLocation().getBlockY());
+                configuration.set(
+                                path + ".z",
+                                player.getLocation().getBlockZ());
+
+                player.sendMessage("§aLocalização do lobby principal definida");
+                break;
             default:
-                player.sendMessage("§cDefinição não encontrada.");
+                player.sendMessage("§cDefinição não encontrada. Utilize (/skwyar set <arena> <lobby/waitingLobby/feast/island/spectator> <argumento>");
                 break;
         }
     }

@@ -33,17 +33,17 @@ public final class KitShopService {
         List<String> helpMessages = config.getStringList("messages.buy_new_kit");
 
         if (kitInstance == null) {
-            player.sendMessage("§cEsse kit não existe");
+            player.sendMessage(config.getString("messages.kitUnavaliable"));
             return;
         }
 
         if (this.playerManager.get(player).getKits().containsKey(kit)) {
-            player.sendMessage("§cVocê já possui o kit " + kit + ".");
+            player.sendMessage(config.getString("messages.playerAlreadyHadKit".replace("{kit}", kit)));
             return;
         }
 
         if (playerCredits < kitInstance.getPrice()) {
-            player.sendMessage("§cVocê não possui créditos suficientes para adquirir esse kit.");
+            player.sendMessage(config.getString("messages.notEnoughCredits"));
             return;
         }
 
@@ -53,9 +53,7 @@ public final class KitShopService {
         playerData.addKit(kitInstance);
         
         for (String message : helpMessages) {
-            player.sendMessage(message
-                    .replace("{kit}", kit)
-                    .replace("{credits}", String.valueOf(kitInstance.getPrice())));
+            player.sendMessage(message.replace("{kit}", kit).replace("{credits}", String.valueOf(kitInstance.getPrice())));
         }
 
     }

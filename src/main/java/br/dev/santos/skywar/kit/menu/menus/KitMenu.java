@@ -21,9 +21,7 @@ import br.dev.santos.skywar.player.PlayerData;
 
 public class KitMenu {
 
-    public static final String TITLE = ChatColor.translateAlternateColorCodes(
-            '&',
-            "&8&lSeus kits");
+    public static final String TITLE = ChatColor.translateAlternateColorCodes('&', "&8&lSeus kits");
 
     private static final int INVENTORY_SIZE = 45;
     private static final int REMOVE_KIT_SLOT = 40;
@@ -37,13 +35,12 @@ public class KitMenu {
     }
 
     public void open(Player player, PlayerData playerData) {
-        Inventory inventory = Bukkit.createInventory(
-                null,
-                INVENTORY_SIZE,
-                TITLE);
+        // Abre o inventário de acordo com o tamanho e titulo
+        Inventory inventory = Bukkit.createInventory(null, INVENTORY_SIZE, TITLE);
 
         kitNamesBySlot.clear();
 
+        // Seta slots dinamicos para futuros kits
         Set<Integer> occupiedSlots = new HashSet<Integer>();
         int nextDynamicSlot = getLastConfiguredSlot() + 1;
 
@@ -57,6 +54,8 @@ public class KitMenu {
             }
 
             int slot;
+
+            // De acordo com todos os kits pega o menuOptions com suas posições e atribui.
 
             Kit.MenuOptions menuOptions = kit.getMenuOptions();
             Integer configuredSlot = null;
@@ -87,6 +86,8 @@ public class KitMenu {
                 nextDynamicSlot = slot + 1;
             }
 
+
+            // Seta o item no menu de kits
             inventory.setItem(
                     slot,
                     createKitIcon(kit));
@@ -95,6 +96,7 @@ public class KitMenu {
             kitNamesBySlot.put(slot, kit.getName());
         }
 
+        // Seta o item para remover kit
         inventory.setItem(
                 REMOVE_KIT_SLOT,
                 createRemoveKitItem());

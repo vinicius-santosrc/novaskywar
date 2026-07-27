@@ -16,9 +16,7 @@ import br.dev.santos.skywar.arena.ArenaLoader;
 import br.dev.santos.skywar.arena.ArenaManager;
 import br.dev.santos.skywar.arena.ArenaMessenger;
 import br.dev.santos.skywar.arena.GameManager;
-import br.dev.santos.skywar.commands.ResetAreaCommand;
 import br.dev.santos.skywar.commands.ResetWorldCommand;
-import br.dev.santos.skywar.commands.SaveAreaCommand;
 import br.dev.santos.skywar.economy.MoneyManager;
 import br.dev.santos.skywar.handler.EliminationHandler;
 import br.dev.santos.skywar.kit.Kit;
@@ -46,7 +44,7 @@ public final class Skywar extends JavaPlugin {
 
     private File backupFolder;
 
-    private final ArenaManager arenaManager = new ArenaManager();
+    private ArenaManager arenaManager;
     private ArenaMessenger arenaMessenger;
 
     private ScoreBoardManager scoreBoardManager;
@@ -103,7 +101,8 @@ public final class Skywar extends JavaPlugin {
     }
 
     private void createManagers() {
-        this.arenaMessenger = new ArenaMessenger();
+        this.arenaMessenger = new ArenaMessenger(this);
+        this.arenaManager = new ArenaManager(this.arenaMessenger);
         this.scoreBoardManager = new ScoreBoardManager();
         this.warpManager = new WarpManager(this.getConfig());
         this.moneyManager = new MoneyManager(this);
@@ -175,20 +174,6 @@ public final class Skywar extends JavaPlugin {
     }
 
     private void registerCommands() {
-        PluginCommand saveAreaCommand = getCommand("salvararea");
-
-        if (saveAreaCommand != null) {
-            saveAreaCommand.setExecutor(
-                    new SaveAreaCommand(this));
-        }
-
-        PluginCommand resetAreaCommand = getCommand("resetarea");
-
-        if (resetAreaCommand != null) {
-            resetAreaCommand.setExecutor(
-                    new ResetAreaCommand(this));
-        }
-
         PluginCommand resetWorldPluginCommand = getCommand("resetworld");
 
         if (resetWorldPluginCommand != null) {
@@ -224,11 +209,11 @@ public final class Skywar extends JavaPlugin {
             case "creditos":
                 int money = this.moneyManager.getMoney(player);
 
-                sendMessageToPlayer(
+                this.getArenaMessenger().sendMessageToPlayer(
                         player,
                         "messages.money_player",
-                        "{money}",
-                        String.valueOf(money));
+                        new String[] { "{money}" },
+                        new String[] { String.valueOf(money) });
 
                 return true;
 
@@ -256,7 +241,7 @@ public final class Skywar extends JavaPlugin {
             case "reload":
                 this.reloadConfig();
 
-                sendMessageToPlayer(
+                this.getArenaMessenger().sendMessageToPlayer(
                         player,
                         "messages.config_reloaded");
 
@@ -288,7 +273,11 @@ public final class Skywar extends JavaPlugin {
 
             case "set":
                 if (!this.arenaManager.exists(args[1], "1")) {
-                    player.sendMessage("§cA arena " + args[1] + " não existe.");
+                    this.getArenaMessenger().sendMessageToPlayer(
+                            player,
+                            "messages.arena_not_exists",
+                            new String[] { "{arena}" },
+                            new String[] { args[1] });
                     return false;
                 }
 
@@ -307,7 +296,7 @@ public final class Skywar extends JavaPlugin {
                 return true;
 
             default:
-                sendMessageToPlayer(
+                this.getArenaMessenger().sendMessageToPlayer(
                         player,
                         "messages.unknown_command");
 
@@ -317,7 +306,7 @@ public final class Skywar extends JavaPlugin {
 
     private void handleJoinCommand(Player player, String[] args) {
         if (args.length < 2) {
-            sendMessageToPlayer(
+            this.getArenaMessenger().sendMessageToPlayer(
                     player,
                     "messages.unknown_command");
             return;
@@ -333,8 +322,11 @@ public final class Skywar extends JavaPlugin {
                     roomNumber);
 
             if (arena == null) {
-                getLogger().severe("Arena não encontrada: " + mapName + " sala " + roomNumber);
-                player.sendMessage("Arena não encontrada");
+                this.getArenaMessenger().sendMessageToPlayer(
+                        player,
+                        "messages.arena_not_exists",
+                        new String[] { "{mapName}" },
+                        new String[] { args[1] });
                 return;
             }
 
@@ -352,7 +344,7 @@ public final class Skywar extends JavaPlugin {
             String[] args) {
 
         if (args.length < 2) {
-            sendMessageToPlayer(
+            this.getArenaMessenger().sendMessageToPlayer(
                     player,
                     "messages.unknown_command");
             return;
@@ -362,7 +354,7 @@ public final class Skywar extends JavaPlugin {
 
         if (playerData == null || playerData.getStatus() != PlayerState.WAITING) {
 
-            sendMessageToPlayer(
+            this.getArenaMessenger().sendMessageToPlayer(
                     player,
                     "messages.not_in_lobby");
             return;
@@ -393,44 +385,6 @@ public final class Skywar extends JavaPlugin {
         for (String message : messages) {
             player.sendMessage(message);
         }
-    }
-
-    public void sendMessageToPlayer(
-            Player player,
-            String path) {
-
-        String message = getConfig().getString(path);
-
-        if (message == null) {
-            getLogger().warning(
-                    "Mensagem não encontrada: " + path);
-            return;
-        }
-
-        player.sendMessage(message);
-    }
-
-    public void sendMessageToPlayer(
-            Player player,
-            String path,
-            String replaceKey,
-            String replaceValue) {
-
-        String message = getConfig().getString(path);
-
-        if (message == null) {
-            getLogger().warning(
-                    "Mensagem não encontrada: " + path);
-            return;
-        }
-
-        if (replaceKey != null && replaceValue != null) {
-            message = message.replace(
-                    replaceKey,
-                    replaceValue);
-        }
-
-        player.sendMessage(message);
     }
 
     public FileConfiguration getMainConfig() {

@@ -25,20 +25,20 @@ public class KitSelectionService {
 
     public void chooseKit(Player player, Kit kit) {
         ItemStack kitIconTest = this.kitManager.getKitIcon(kit);
+        Skywar plugin = Skywar.getPlugin(Skywar.class);
+        FileConfiguration config = plugin.getConfig();
 
         // Verifica existência do kit.
         if (kitIconTest == null) {
-            player.sendMessage("§cEsse kit não existe ou está indisponível.");
+            player.sendMessage(config.getString("messages.kitUnavaliable"));
             return;
         }
 
         // Verifica se o usuário possui o kit selecionado.
         if (!this.playerManager.get(player).getKits().containsKey(kit.getName())) {
-            player.sendMessage("§cVocê ainda não adquiriu esse kit. Compre na loja");
+            player.sendMessage(config.getString("messages.playerDontHaveKit"));
             return;
         }
-        Skywar plugin = Skywar.getPlugin(Skywar.class);
-        FileConfiguration config = plugin.getConfig();
 
         PlayerData playerData = this.playerManager.getOrCreate(player);
         playerData.setKit(kit);

@@ -22,9 +22,7 @@ import br.dev.santos.skywar.player.PlayerManager;
 
 public class ShopMenu {
 
-    public static final String TITLE = ChatColor.translateAlternateColorCodes(
-            '&',
-            "&8&lLoja");
+    public static final String TITLE = ChatColor.translateAlternateColorCodes('&', "&8&lLoja");
 
     private static final int INVENTORY_SIZE = 45;
     private static final int BALANCE_SLOT = 40;
@@ -44,10 +42,7 @@ public class ShopMenu {
     }
 
     public void open(Player player, PlayerData playerData) {
-        Inventory inventory = Bukkit.createInventory(
-                null,
-                INVENTORY_SIZE,
-                TITLE);
+        Inventory inventory = Bukkit.createInventory(null, INVENTORY_SIZE, TITLE);
 
         kitNamesBySlot.clear();
 

@@ -5,15 +5,11 @@ api-version: '1.8'
 description: "Plugin de SkyWar. Copywrite NovaGames 2024."
 
 commands:
-  salvararea:
-    description: Salva areas para utilizar futuramente
-  resetarea:
-    description: Reseta areas salvas
   skywar:
-    description: Entrar em uma arena de SkyWars.
+    description: Prefixo para gerenciamento de estado do skywar.
     usage: /skywar
   resetworld:
-    description: Reseta o mundo de SkyWars.
+    description: Reseta o mundo de SkyWar.
     usage: /resetworld
   start:
     description: Inicia a partida atual de SkyWar

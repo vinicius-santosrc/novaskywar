@@ -1,5 +1,6 @@
 package br.dev.santos.skywar.listeners;
 
+import org.bukkit.Bukkit;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +13,8 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
@@ -56,7 +59,8 @@ public final class WaitingLobbyListener implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             PlayerData playerData = this.playerManager.get(player);
-            if (playerData.getStatus().equals(PlayerState.WAITING) || playerData.getArena().getStatus() == StatusArena.FINISHING)
+            if (playerData.getStatus().equals(PlayerState.WAITING)
+                    || playerData.getArena().getStatus() == StatusArena.FINISHING)
                 event.setCancelled(true);
         }
     }
@@ -68,7 +72,6 @@ public final class WaitingLobbyListener implements Listener {
         if (playerData.getStatus().equals(PlayerState.WAITING) || playerData.getArena().getStatus() == StatusArena.FINISHING)
             event.setCancelled(true);
     }
-
 
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent event) {
@@ -188,6 +191,62 @@ public final class WaitingLobbyListener implements Listener {
             if (playerData.getStatus().equals(PlayerState.WAITING)) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        PlayerData playerData = this.playerManager.get(event.getPlayer());
+
+        if (playerData == null) {
+            return;
+        }
+
+        if (playerData.getStatus() != PlayerState.LOBBY) {
+            updateWaitingLobbyVisibility(playerData);
+            return;
+        }
+
+        restorePlayerVisibility(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        restorePlayerVisibility(event.getPlayer());
+    }
+
+    private void updateWaitingLobbyVisibility(PlayerData playerData) {
+        Player player = playerData.getPlayerEntity();
+
+        for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+            if (otherPlayer.equals(player)) {
+                continue;
+            }
+
+            PlayerData otherPlayerData = this.playerManager.get(otherPlayer);
+
+            boolean isSameMatch = otherPlayerData != null
+                    && otherPlayerData.getStatus() != PlayerState.LOBBY
+                    && otherPlayerData.getArena() == playerData.getArena();
+
+            if (isSameMatch) {
+                player.showPlayer(otherPlayer);
+                otherPlayer.showPlayer(player);
+            } else {
+                player.hidePlayer(otherPlayer);
+                otherPlayer.hidePlayer(player);
+            }
+        }
+    }
+
+    private void restorePlayerVisibility(Player player) {
+        for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+            if (otherPlayer.equals(player)) {
+                continue;
+            }
+
+            player.showPlayer(otherPlayer);
+            otherPlayer.showPlayer(player);
         }
     }
 }
