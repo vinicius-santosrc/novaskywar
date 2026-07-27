@@ -51,7 +51,6 @@ public final class SignMonitorTask extends BukkitRunnable {
                 || firstLine.contains("Finalizando")
                 || firstLine.contains("Resetando")
                 || firstLine.contains("Inválida")
-                || firstLine.contains("Fechada")
-                || secondLine.startsWith("SkyWar ");
+                || firstLine.contains("Fechada");
     }
 }

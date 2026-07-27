@@ -34,19 +34,25 @@ public class MoneyManager {
 
     // Salva o dinheiro do jogador
     public void setMoney(Player player, int amount) {
-        moneyConfig.set("players." + player.getUniqueId().toString(), amount);
+        moneyConfig.set("players." + player.getDisplayName(), amount);
         saveMoneyConfig();
     }
 
     // Pega o dinheiro do jogador
     public int getMoney(Player player) {
-        return moneyConfig.getInt("players." + player.getUniqueId().toString(), 0);
+        return moneyConfig.getInt("players." + player.getDisplayName(), 0);
     }
 
     // Adiciona uma quantidade de dinheiro
     public void addMoney(Player player, int amount) {
         int currentMoney = getMoney(player);
         setMoney(player, currentMoney + amount);
+    }
+
+    // Remove uma quantidade de dinheiro
+    public void removeMoney(Player player, int amount) {
+        int currentMoney = getMoney(player);
+        setMoney(player, currentMoney - amount);
     }
 
     // Salva as mudanças no arquivo YAML

@@ -25,7 +25,6 @@ import br.dev.santos.skywar.tasks.FireworksTask;
 import br.dev.santos.skywar.tasks.MatchMonitorTask;
 import br.dev.santos.skywar.tasks.PvPEnableTask;
 import br.dev.santos.skywar.tasks.StartCountdownTask;
-import br.dev.santos.skywar.warp.WarpManager.Coord;
 
 import org.bukkit.plugin.java.JavaPlugin;
 
@@ -236,9 +235,7 @@ public class GameManager {
                                         arena.getTimeToStart());
 
                         arena.setCountdownTask(task);
-
-                        arenaMessenger.sendMessageToArena(arena,
-                                        "§3[SkyWar] §6Sala cheia! Tempo reduzido para §f30 segundos§6!");
+                        arenaMessenger.sendMessageToArena(arena, this.getConfig().getString("messages.arenaFull"));
                 }
 
                 // Stop CountdownTask pois está menor que o minimo de players

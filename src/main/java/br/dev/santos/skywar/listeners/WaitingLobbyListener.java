@@ -5,6 +5,7 @@ import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
@@ -12,10 +13,13 @@ import org.bukkit.event.inventory.InventoryDragEvent;
 import org.bukkit.event.player.PlayerDropItemEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 
 import br.dev.santos.skywar.arena.Arena.StatusArena;
+import br.dev.santos.skywar.kit.menu.MenuManager;
 import br.dev.santos.skywar.player.PlayerData;
 import br.dev.santos.skywar.player.PlayerManager;
 import br.dev.santos.skywar.utils.TeleportUtils;
@@ -27,13 +31,16 @@ public final class WaitingLobbyListener implements Listener {
 
     private final PlayerManager playerManager;
     private final WarpManager warpManager;
+    private final MenuManager menuManager;
 
     public WaitingLobbyListener(
             PlayerManager playerManager,
-            WarpManager warpManager) {
+            WarpManager warpManager,
+            MenuManager menuManager) {
 
         this.playerManager = playerManager;
         this.warpManager = warpManager;
+        this.menuManager = menuManager;
     }
 
     @EventHandler
@@ -52,7 +59,8 @@ public final class WaitingLobbyListener implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
             PlayerData playerData = this.playerManager.get(player);
-            if (playerData.getStatus().equals(PlayerState.WAITING) || playerData.getArena().getStatus() == StatusArena.FINISHING)
+            if (playerData.getStatus().equals(PlayerState.WAITING)
+                    || playerData.getArena().getStatus() == StatusArena.FINISHING)
                 event.setCancelled(true);
         }
     }
@@ -65,13 +73,23 @@ public final class WaitingLobbyListener implements Listener {
             event.setCancelled(true);
     }
 
-
     @EventHandler
     public void onPlayerClick(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         PlayerData playerData = this.playerManager.get(player);
 
         if (playerData == null || !playerData.getStatus().equals(PlayerState.WAITING)) {
+            return;
+        }
+
+        if (event.getAction() == Action.PHYSICAL) {
+            event.setCancelled(true);
+            return;
+        }
+
+        if (event.getClickedBlock() != null
+                && isBlockedInteraction(event.getClickedBlock().getType())) {
+            event.setCancelled(true);
             return;
         }
 
@@ -88,9 +106,43 @@ public final class WaitingLobbyListener implements Listener {
         // Atribui comando para o báu
         // Atribui esmeralda para a loja
         if (meta.getDisplayName().equals("§6Seleção de KIT")) {
-            Bukkit.dispatchCommand(player, "chestcommands open swkits " + player.getDisplayName());
+            this.menuManager.openKitMenu(this.playerManager.get(player));
         } else if (meta.getDisplayName().equals("§2Loja")) {
-            Bukkit.dispatchCommand(player, "chestcommands open swloja " + player.getDisplayName());
+            this.menuManager.openShopMenu(this.playerManager.get(player));
+        }
+    }
+
+    private boolean isBlockedInteraction(Material material) {
+        switch (material) {
+            case CHEST:
+            case TRAPPED_CHEST:
+            case ENDER_CHEST:
+
+            case WOODEN_DOOR:
+            case IRON_DOOR_BLOCK:
+
+            case TRAP_DOOR:
+
+            case FENCE_GATE:
+
+            case WOOD_PLATE:
+            case STONE_PLATE:
+            case IRON_PLATE:
+            case GOLD_PLATE:
+
+            case LEVER:
+            case STONE_BUTTON:
+            case WOOD_BUTTON:
+
+            case DIODE_BLOCK_OFF:
+            case DIODE_BLOCK_ON:
+
+            case REDSTONE_COMPARATOR_OFF:
+            case REDSTONE_COMPARATOR_ON:
+                return true;
+
+            default:
+                return false;
         }
     }
 
@@ -139,6 +191,62 @@ public final class WaitingLobbyListener implements Listener {
             if (playerData.getStatus().equals(PlayerState.WAITING)) {
                 event.setCancelled(true);
             }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerTeleport(PlayerTeleportEvent event) {
+        PlayerData playerData = this.playerManager.get(event.getPlayer());
+
+        if (playerData == null) {
+            return;
+        }
+
+        if (playerData.getStatus() != PlayerState.LOBBY) {
+            updateWaitingLobbyVisibility(playerData);
+            return;
+        }
+
+        restorePlayerVisibility(event.getPlayer());
+    }
+
+    @EventHandler
+    public void onPlayerQuit(PlayerQuitEvent event) {
+        restorePlayerVisibility(event.getPlayer());
+    }
+
+    private void updateWaitingLobbyVisibility(PlayerData playerData) {
+        Player player = playerData.getPlayerEntity();
+
+        for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+            if (otherPlayer.equals(player)) {
+                continue;
+            }
+
+            PlayerData otherPlayerData = this.playerManager.get(otherPlayer);
+
+            boolean isSameMatch = otherPlayerData != null
+                    && otherPlayerData.getStatus() != PlayerState.LOBBY
+                    && otherPlayerData.getArena() == playerData.getArena();
+
+            if (isSameMatch) {
+                player.showPlayer(otherPlayer);
+                otherPlayer.showPlayer(player);
+            } else {
+                player.hidePlayer(otherPlayer);
+                otherPlayer.hidePlayer(player);
+            }
+        }
+    }
+
+    private void restorePlayerVisibility(Player player) {
+        for (Player otherPlayer : Bukkit.getOnlinePlayers()) {
+            if (otherPlayer.equals(player)) {
+                continue;
+            }
+
+            player.showPlayer(otherPlayer);
+            otherPlayer.showPlayer(player);
         }
     }
 }

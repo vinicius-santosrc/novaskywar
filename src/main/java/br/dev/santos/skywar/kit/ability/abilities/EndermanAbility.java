@@ -43,7 +43,7 @@ public class EndermanAbility extends Ability {
             if (arena != null && FeastUtils.blockEnderPearlInsideFeast(enderPearlLocation, arena)) {
 
                 event.setCancelled(true);
-                player.sendMessage("§cVocê não pode jogar uma Enderpearl no feast!");
+                player.sendMessage(config.getString("messages.ender_pearl_feast"));
                 player.getInventory().addItem(new ItemStack(Material.ENDER_PEARL, 1));
                 player.updateInventory();
                 return;

@@ -3,10 +3,13 @@ package br.dev.santos.skywar.utils;
 import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
+import br.dev.santos.skywar.Skywar;
 import br.dev.santos.skywar.arena.Arena;
 import br.dev.santos.skywar.player.PlayerData;
+import br.dev.santos.skywar.player.PlayerData.PlayerState;
 
 public abstract class FeastUtils {
 
@@ -94,13 +97,16 @@ public abstract class FeastUtils {
             PlayerData playerData,
             Arena arena) {
 
+        Skywar plugin = Skywar.getPlugin(Skywar.class);
+        FileConfiguration config = plugin.getConfig();
+
         if (arena.feastReached) {
             return false;
         }
 
         Player player = playerData.getPlayerEntity();
 
-        if (!isPlayerInFeast(player, arena)) {
+        if (!isPlayerInFeast(player, arena) || playerData.getStatus().equals(PlayerState.SPECTATOR)) {
             return false;
         }
 
@@ -108,11 +114,7 @@ public abstract class FeastUtils {
 
         strikeLightningAtWinner(arena, player);
 
-        arena.sendMessageToArena(
-                ("§3[SkyWar] §6{player} foi o primeiro a chegar no feast!")
-                        .replace(
-                                "{player}",
-                                player.getDisplayName()));
+        arena.sendMessageToArena(config.getString("messages.playerReachedFeast").replace("{player}", player.getDisplayName()));
 
         playerData.addCredits(
                 "chegar primeiro ao feast",

@@ -88,10 +88,10 @@ public class PlayerGameService {
             this.kitManager.giveItemsToPlayer(playerEntity, playerData.getKit());
 
             // Teleporta cada player a sua ilha
-            indexIsland++;
             playerData.setIsland(indexIsland);
             Coord islandCoord = TeleportUtils.getCoordIslandArenaByIndex(arena, indexIsland);
             this.warpManager.teleport(playerEntity, islandCoord);
+            indexIsland++;
 
         }
     }

@@ -2,12 +2,14 @@ package br.dev.santos.skywar.listeners;
 
 import org.bukkit.block.Block;
 import org.bukkit.block.Sign;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.SignChangeEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 
+import br.dev.santos.skywar.Skywar;
 import br.dev.santos.skywar.arena.Arena;
 import br.dev.santos.skywar.arena.ArenaManager;
 import org.bukkit.entity.Player;
@@ -59,6 +61,9 @@ public final class SignClickListener implements Listener {
 
     @EventHandler
     public void onSignClick(PlayerInteractEvent event) {
+        Skywar plugin = Skywar.getPlugin(Skywar.class);
+        FileConfiguration config = plugin.getConfig();
+
         if (event.getAction() != Action.RIGHT_CLICK_BLOCK) {
             return;
         }
@@ -86,12 +91,12 @@ public final class SignClickListener implements Listener {
         }
 
         if (arena == null) {
-            event.getPlayer().sendMessage("§cEssa arena não existe mais.");
+            event.getPlayer().sendMessage(config.getString("messages.arena_not_exists").replace("{arena}", mapName));
             return;
         }
 
         if (arena.getPlayers().size() >= arena.maxPlayers) {
-            event.getPlayer().sendMessage("§cEssa arena está cheia.");
+            event.getPlayer().sendMessage(config.getString("messages.arenaIsFullWarn"));
             return;
         }
 
@@ -99,15 +104,11 @@ public final class SignClickListener implements Listener {
 
         switch (arena.getStatus()) {
             case RESETING:
-                event.getPlayer().sendMessage("§cEssa arena já está em andamento.");
-                break;
             case FINISHING:
             case STARTED:
-                event.getPlayer().sendMessage("§cEssa arena já está em andamento.");
+                event.getPlayer().sendMessage(config.getString("messages.arenaInProgress"));
                 break;
             case OPEN:
-                player.performCommand("skywar entrar " + mapName + " " + numberRoom);
-                break;
             case VIP:
                 player.performCommand("skywar entrar " + mapName + " " + numberRoom);
                 break;

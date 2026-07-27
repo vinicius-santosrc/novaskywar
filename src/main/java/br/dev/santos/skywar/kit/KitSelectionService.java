@@ -15,42 +15,45 @@ public class KitSelectionService {
     private final PlayerManager playerManager;
     private final KitManager kitManager;
 
-    public KitSelectionService(PlayerManager playerManager, KitManager kitManager) {
+    public KitSelectionService(
+            PlayerManager playerManager,
+            KitManager kitManager) {
+
         this.playerManager = playerManager;
         this.kitManager = kitManager;
     }
 
     public void chooseKit(Player player, Kit kit) {
         ItemStack kitIconTest = this.kitManager.getKitIcon(kit);
-        if (kitIconTest == null) {
-            player.sendMessage("§cEsse kit não existe ou está indisponível.");
-            return;
-        }
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
+
+        // Verifica existência do kit.
+        if (kitIconTest == null) {
+            player.sendMessage(config.getString("messages.kitUnavaliable"));
+            return;
+        }
+
+        // Verifica se o usuário possui o kit selecionado.
+        if (!this.playerManager.get(player).getKits().containsKey(kit.getName())) {
+            player.sendMessage(config.getString("messages.playerDontHaveKit"));
+            return;
+        }
 
         PlayerData playerData = this.playerManager.getOrCreate(player);
         playerData.setKit(kit);
 
-        if (kit == null) {
-            ItemStack chest = new ItemStack(Material.CHEST);
-            ItemMeta metaChest = chest.getItemMeta();
-            if (metaChest != null) {
-                metaChest.setDisplayName("§6Seleção de KIT");
-                chest.setItemMeta(metaChest);
-            }
-            player.getInventory().setItem(3, chest);
-            return;
-        }
-
         String message = config.getString("messages.kit_selected").replace("{kit}", kit.getName());
         player.sendMessage(message);
+
         ItemStack kitIcon = kitIconTest.clone();
         ItemMeta meta = kitIcon.getItemMeta();
+
         if (meta != null) {
             meta.setDisplayName("§6Seleção de KIT");
             kitIcon.setItemMeta(meta);
         }
+
         player.getInventory().setItem(3, kitIcon);
     }
 
@@ -59,19 +62,32 @@ public class KitSelectionService {
         FileConfiguration config = plugin.getConfig();
 
         PlayerData playerData = this.playerManager.get(player);
+
         if (playerData != null) {
             playerData.setKit(null);
         }
+
+        ItemStack chest = new ItemStack(Material.CHEST);
+        ItemMeta chestMeta = chest.getItemMeta();
+
+        // Define baú de seleção de Kits
+        if (chestMeta != null) {
+            chestMeta.setDisplayName("§6Seleção de KIT");
+            chest.setItemMeta(chestMeta);
+        }
+
+        player.getInventory().setItem(3, chest);
 
         String message = config.getString("messages.kit_removed");
         player.sendMessage(message);
     }
 
     public void giveSelectionItems(Player player) {
-        //Define bau de seleção de Kits
+        // Define baú de seleção de Kits
 
         ItemStack chest = new ItemStack(Material.CHEST);
         ItemMeta chestMeta = chest.getItemMeta();
+
         if (chestMeta != null) {
             chestMeta.setDisplayName("§6Seleção de KIT");
             chest.setItemMeta(chestMeta);
@@ -81,12 +97,13 @@ public class KitSelectionService {
 
         ItemStack emerald = new ItemStack(Material.EMERALD);
         ItemMeta emeraldMeta = emerald.getItemMeta();
+
         if (emeraldMeta != null) {
             emeraldMeta.setDisplayName("§2Loja");
             emerald.setItemMeta(emeraldMeta);
         }
 
-        // Envia pro inventário
+        // Envia para o inventário
 
         Inventory inventory = player.getInventory();
         inventory.setItem(3, chest);
