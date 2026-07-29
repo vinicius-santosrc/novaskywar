@@ -28,12 +28,12 @@ public class AbilityManager {
         this.plugin = plugin;
 
         register(new VidaExtraAbility(playerManager, warpManager, arenaMessenger));
-        register(new VampiroAbility());
-        register(new AssassinoAbility());
+        register(new VampiroAbility(playerManager));
+        register(new AssassinoAbility(playerManager));
         register(new HomemAranhaAbility());
-        register(new HomemBombaAbility());
+        register(new HomemBombaAbility(playerManager));
         register(new EndermanAbility(playerManager));
-        register(new SopaAbility());
+        register(new SopaAbility(playerManager));
         register(new ZeusAbility());
     }
 

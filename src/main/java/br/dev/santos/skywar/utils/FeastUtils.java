@@ -100,7 +100,7 @@ public abstract class FeastUtils {
         Skywar plugin = Skywar.getPlugin(Skywar.class);
         FileConfiguration config = plugin.getConfig();
 
-        if (arena.feastReached) {
+        if (arena.feastReached || playerData.getDead() || playerData.getStatus() == PlayerState.SPECTATOR) {
             return false;
         }
 

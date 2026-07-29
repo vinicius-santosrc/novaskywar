@@ -2,14 +2,13 @@ package br.dev.santos.skywar.kit;
 
 import java.util.ArrayList;
 
+import br.dev.santos.skywar.kit.ability.abilities.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 
 import br.dev.santos.skywar.arena.ArenaMessenger;
-import br.dev.santos.skywar.kit.ability.abilities.EndermanAbility;
-import br.dev.santos.skywar.kit.ability.abilities.VidaExtraAbility;
 import br.dev.santos.skywar.kit.kits.Apple;
 import br.dev.santos.skywar.kit.kits.Arqueiro;
 import br.dev.santos.skywar.kit.kits.Assassino;
@@ -85,7 +84,7 @@ public class KitManager implements Listener {
     private void registerDefaults() {
         register(new Apple());
         register(new Arqueiro());
-        register(new Assassino());
+        register(new Assassino(this.playerManager));
         register(new Construtor());
         register(new Encantador());
         register(new Enderman(new EndermanAbility(this.playerManager)));
@@ -93,7 +92,7 @@ public class KitManager implements Listener {
         register(new Ferramentas());
         register(new GrandPa());
         register(new HomemAranha());
-        register(new HomemBomba());
+        register(new HomemBomba(new HomemBombaAbility(this.playerManager)));
         register(new HomemDasCavernas());
         register(new HomemFogo());
         register(new Minerador());
@@ -102,9 +101,9 @@ public class KitManager implements Listener {
         register(new PesoPena());
         register(new Poseidon());
         register(new Sacerdote());
-        register(new Sopa());
+        register(new Sopa(new SopaAbility(this.playerManager)));
         register(new TheFlash());
-        register(new Vampiro());
+        register(new Vampiro(new VampiroAbility(this.playerManager)));
         register(new VidaExtra(
                 new VidaExtraAbility(
                         this.playerManager,

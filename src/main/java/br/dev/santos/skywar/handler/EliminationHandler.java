@@ -55,15 +55,6 @@ public class EliminationHandler {
                             .replace("{X}", String.valueOf(arena.alivePlayers.size()))
                             .replace("{Y}", String.valueOf(arena.maxPlayers));
                 }
-
-
-                if (killerData.getKit() instanceof Assassino) {
-                    killer.addPotionEffect(new PotionEffect(PotionEffectType.INCREASE_DAMAGE, 600, 1));
-                }
-                if (killerData.getKit() instanceof Vampiro) {
-                    double health = killer.getHealth();
-                    killer.setHealth(health + 5);
-                }
             }
         } else if (lastDamageCause.getCause() == EntityDamageEvent.DamageCause.VOID) {
             this.deathMessage = config.getString("messages.death")

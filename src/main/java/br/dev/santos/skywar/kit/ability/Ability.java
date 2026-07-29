@@ -1,5 +1,4 @@
 package br.dev.santos.skywar.kit.ability;
-
 import org.bukkit.event.Listener;
 
 public abstract class Ability implements Listener {

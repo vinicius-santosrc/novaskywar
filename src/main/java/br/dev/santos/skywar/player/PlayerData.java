@@ -76,6 +76,12 @@ public class PlayerData {
         this.moneyManager.removeMoney(playerEntity, quantity);
     }
 
+    public void resetCreditsEarn() {
+        this.creditsEarnList.clear();
+        this.creditsEarn = 0;
+        this.getAllCredits();
+    }
+
     public Map<String, Kit> getKits() {
         this.kits = this.kitUserManager.getAllByUser(this);
         return this.kits;

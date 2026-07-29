@@ -9,7 +9,7 @@ import br.dev.santos.skywar.kit.Kit;
 import br.dev.santos.skywar.kit.ability.abilities.HomemBombaAbility;
 
 public class HomemBomba extends Kit {
-    public HomemBomba() {
+    public HomemBomba(HomemBombaAbility homemBombaAbility) {
         super("Homem-Bomba", true, new ItemStack(Material.TNT), false,
                 new MenuOptions(
                         "§4Kit Homem-Bomba",
@@ -17,7 +17,7 @@ public class HomemBomba extends Kit {
                                 "§fRecebe 3 TNTs"),
                         6, 1),
                 1000,
-                new HomemBombaAbility());
+                homemBombaAbility);
         addItem(new ItemStack(Material.TNT, 3));
     }
 }

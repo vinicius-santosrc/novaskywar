@@ -2,6 +2,7 @@ package br.dev.santos.skywar.kit.kits;
 
 import java.util.Arrays;
 
+import br.dev.santos.skywar.player.PlayerManager;
 import org.bukkit.Material;
 import org.bukkit.inventory.ItemStack;
 
@@ -9,7 +10,7 @@ import br.dev.santos.skywar.kit.Kit;
 import br.dev.santos.skywar.kit.ability.abilities.AssassinoAbility;
 
 public class Assassino extends Kit {
-    public Assassino() {
+    public Assassino(PlayerManager playerManager) {
         super("Assassino", true, new ItemStack(Material.FIREWORK), false,
                 new MenuOptions(
                         "§eKit Assassino",
@@ -17,6 +18,6 @@ public class Assassino extends Kit {
                         4, 3
                 ),
                 1000
-            , new AssassinoAbility());
+            , new AssassinoAbility(playerManager));
     }
 }

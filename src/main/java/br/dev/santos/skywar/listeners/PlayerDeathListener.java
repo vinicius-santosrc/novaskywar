@@ -52,9 +52,9 @@ public final class PlayerDeathListener implements Listener {
 
         // Removendo mensagem de morte padrão do minecraft e respawnando o player
         event.setDeathMessage(null);
-        player.spigot().respawn();
 
         if (playerData != null && playerData.getKit() instanceof VidaExtra && !playerData.getHasUsedExtraLife()) {
+            player.spigot().respawn();
             return;
         }
         
@@ -81,8 +81,10 @@ public final class PlayerDeathListener implements Listener {
             Coord winnerPlace = TeleportUtils.getWinnerPlace(arena);
             this.warpManager.teleport(playerData.getPlayerEntity(), winnerPlace);
             this.playerGameService.prepareForSpectator(playerData);
-            
+
             this.eliminationHandler.handle(playerData.getArena(), playerData);
+
+            player.spigot().respawn();
         }
 
     }

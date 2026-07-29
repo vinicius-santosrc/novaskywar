@@ -132,6 +132,8 @@ public class PlayerGameService {
         playerData.setStatus(PlayerState.LOBBY);
         playerData.setIsland(0);
 
+        playerData.resetCreditsEarn();
+
         playerEntity.setLevel(0);
         playerEntity.setTotalExperience(0);
         playerEntity.setExp(0);
